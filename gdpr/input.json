@@ -1,0 +1,47 @@
+{
+  "user": {
+    "id": "1"
+  },
+  "consents": {
+    "1": {
+      "value": "yes",
+      "withdrawn": false
+    },
+    "2": {
+      "value": "no",
+      "withdrawn": false
+    },
+    "3": {
+      "value": "yes",
+      "withdrawn": true
+    }
+  },
+  "lawful_purposes": [
+    "contract",
+    "legal_obligation",
+    "consent_based_marketing"
+  ],
+  "data_items": [
+    {
+      "user_id": "1",
+      "field": "email",
+      "purpose": "contract",
+      "source": "user",
+      "purpose_presented": true
+    },
+    {
+      "user_id": "1",
+      "field": "age",
+      "purpose": "consent_based_marketing",
+      "source": "user",
+      "purpose_presented": true
+    },
+    {
+      "user_id": "2",
+      "field": "email",
+      "purpose": "contract",
+      "source": "user",
+      "purpose_presented": true
+    }
+  ]
+}
