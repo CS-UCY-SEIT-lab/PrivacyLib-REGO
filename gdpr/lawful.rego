@@ -20,7 +20,7 @@ lawful_purpose(purpose) if {
 }
 
 #
-# (3) Present the purpose of processing to the user
+# (3) check if system has presented the purpose of processing to the user
 # We assume each data item has "purpose_presented": true
 #
 purpose_presented(di) if {
@@ -39,9 +39,11 @@ data_from_user(di) if {
 # Helper: all data items for a given user
 #
 user_data_item(user_id, di) if {
-    some i
-    di := input.data_items[i]
-    di.user_id == user_id
+    some i, j
+    u := input.users[i]
+    u.id == user_id
+    d := u.data_items[j]   # local variable
+    di == d                # unify di with d (no reassign)
 }
 
 #
@@ -57,11 +59,13 @@ data_item_lawful(di) if {
 }
 
 #
-# Is there any data item for this user that is NOT lawful?
+# check if there is any data item for this user that is NOT lawful
 #
 exists_unlawful_data(user_id) if {
-    some di
-    user_data_item(user_id, di)
+    some i, j
+    u := input.users[i]
+    u.id == user_id
+    di := u.data_items[j]
     not data_item_lawful(di)
 }
 
