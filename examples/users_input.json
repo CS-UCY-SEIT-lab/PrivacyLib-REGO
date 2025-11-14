@@ -1,0 +1,7 @@
+{
+  "users": [
+    { "id": 1, "consent": true },
+    { "id": 2, "consent": false },
+    { "id": 3, "consent": true }
+  ]
+}
