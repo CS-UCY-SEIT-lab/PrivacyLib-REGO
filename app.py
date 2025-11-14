@@ -1,26 +1,17 @@
-from opa_client import evaluate
+import json
+from opa_client import call_consent_policy
 
-# Example consent records the app has
-consents = {
-    "alice": {"value": "yes", "withdrawn": False},
-    "bob":   {"value": "yes", "withdrawn": True},
-    "carol": {"value": "no",  "withdrawn": False},
-}
+# Load your existing gdpr/input.json
+with open("gdpr/input.json", "r", encoding="utf-8") as f:
+    base_input = json.load(f)
 
 def may_process_or_store(user_id: str) -> bool:
-    input_data = {
-        "user_id": user_id,
-        "consents": consents,
-    }
+    # Just pass the base input and the user_id argument
+    return call_consent_policy(user_id, base_input)
 
-    # Call your Rego policy via OPA
-    return bool(evaluate("consent/may_process_or_store", input_data))
-
-# Example usage in app code
-for user in ["alice", "bob", "carol"]:
-    if may_process_or_store(user):
-        print(f"{user}: OK to store/process data")
-        # here the programmer would store data in DB, etc.
+# Example: check the users "1", "2", "3"
+for uid in ["1", "2", "3"]:
+    if may_process_or_store(uid):
+        print(f"user {uid}: OK to store/process data")
     else:
-        print(f"{user}: NOT allowed to store/process data")
-        # here the programmer would reject/log/etc.
+        print(f"user {uid}: NOT allowed to store/process data")
