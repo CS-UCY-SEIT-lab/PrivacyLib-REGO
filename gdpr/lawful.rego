@@ -76,8 +76,17 @@ exists_unlawful_data(user_id) if {
 #   AND
 #   (2-4) no unlawful data items
 #
-lawful_processing(user_id) if {
+lawful_processing(user_id) := true if {
     consent_ok(user_id)
     not exists_unlawful_data(user_id)
 }
+
+lawful_processing(user_id) := false if {
+    not consent_ok(user_id)
+}
+
+lawful_processing(user_id) := false if {
+    exists_unlawful_data(user_id)
+}
+
 

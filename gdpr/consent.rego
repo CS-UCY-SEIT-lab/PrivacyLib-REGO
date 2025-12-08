@@ -27,7 +27,16 @@ consent_withdrawn(user_id) if {
 #
 # FINAL DECISION
 #
-may_process_or_store(user_id) if {
+may_process_or_store(user_id) := true if {
     has_given_consent(user_id)
     not consent_withdrawn(user_id)
 }
+
+may_process_or_store(user_id) := false if {
+    not has_given_consent(user_id)
+}
+
+may_process_or_store(user_id) := false if {
+    consent_withdrawn(user_id)
+}
+
