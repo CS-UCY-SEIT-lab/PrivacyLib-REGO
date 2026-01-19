@@ -4,9 +4,11 @@ package consent
 # Helper: get consent record for a user
 #
 consent_record(user_id) := rec if {
-    key := sprintf("%v", [user_id])   # convert to string
-    rec := input.consents[key]
+  key := sprintf("%v", [user_id])
+  rec := input.consents[key]
+  rec != null
 }
+
 
 #
 # (1) User must have given consent
