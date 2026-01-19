@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OPA input.json Generator (PrivacyLib)</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; background: #f6f7fb; color: #111; }
+    header { padding: 18px 20px; background: #fff; border-bottom: 1px solid #e6e8ef; position: sticky; top: 0; z-index: 10; }
+    header h1 { margin: 0; font-size: 18px; }
+    header p { margin: 6px 0 0; color: #555; font-size: 13px; }
+    main { padding: 18px 20px 40px; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; }
+    section { background: #fff; border: 1px solid #e6e8ef; border-radius: 14px; padding: 14px; }
+    section h2 { margin: 0 0 10px; font-size: 14px; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; }
+    .col-12 { grid-column: span 12; }
+    .col-6 { grid-column: span 6; }
+    .col-4 { grid-column: span 4; }
+    .col-3 { grid-column: span 3; }
+    .col-2 { grid-column: span 2; }
+    label { display: block; font-size: 12px; color: #444; margin: 0 0 4px; }
+    input, select, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #d9dce7;
+      border-radius: 10px;
+      padding: 10px 10px;
+      font-size: 13px;
+      background: #fff;
+    }
+    textarea { min-height: 74px; resize: vertical; }
+    .row { display: flex; gap: 8px; align-items: center; }
+    .btn {
+      appearance: none;
+      border: 1px solid #d9dce7;
+      background: #fff;
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn.primary { background: #111; color: #fff; border-color: #111; }
+    .btn.danger { border-color: #ffccd2; background: #fff5f6; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .muted { color: #666; font-size: 12px; }
+    .pill { display: inline-flex; gap: 6px; align-items: center; padding: 3px 8px; border-radius: 999px; border: 1px solid #e6e8ef; background: #fafbff; font-size: 12px; }
+    .list { display: grid; gap: 10px; }
+    .card { border: 1px solid #e6e8ef; border-radius: 14px; padding: 12px; background: #fff; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .card-title { font-weight: 600; font-size: 13px; }
+    pre {
+      margin: 0;
+      background: #0b1020;
+      color: #e9ecff;
+      border-radius: 14px;
+      padding: 12px;
+      overflow: auto;
+      font-size: 12px;
+      line-height: 1.45;
+      border: 1px solid #111a33;
+    }
+    .warn { color: #8a5a00; background: #fff7e6; border: 1px solid #ffe0a3; padding: 10px; border-radius: 12px; font-size: 12px; }
+    .ok { color: #0f6a2a; background: #ecfff2; border: 1px solid #b9f1c9; padding: 10px; border-radius: 12px; font-size: 12px; }
+    @media (max-width: 980px) {
+      main { grid-template-columns: 1fr; }
+      header { position: static; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>PrivacyLib OPA <code>input.json</code> Generator</h1>
+  <p>Fill the form, preview the JSON, then download. IDs are treated as <b>strings</b> to avoid OPA type mismatches.</p>
+</header>
+
+<main>
+  <!-- LEFT: FORM -->
+  <div class="list">
+
+    <section>
+      <h2>1) Request</h2>
+      <div class="grid">
+        <div class="col-6">
+          <label for="requestUserId">request.user_id (string)</label>
+          <input id="requestUserId" placeholder="e.g. 1" value="1" />
+          <div class="muted">Tip: keep this consistent with <code>users[].id</code> and <code>consents</code> keys.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2) Storage</h2>
+      <div class="grid">
+        <div class="col-6">
+          <label for="storagePeriod">storage.period</label>
+          <input id="storagePeriod" value="2 years" />
+        </div>
+        <div class="col-6">
+          <label for="storageCriteria">storage.criteria</label>
+          <input id="storageCriteria" value="standard retention policy" />
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>3) DPO</h2>
+      <div class="grid">
+        <div class="col-6">
+          <label for="dpoName">dpo.name</label>
+          <input id="dpoName" value="Data Protection Officer Joe Bloggs" />
+        </div>
+        <div class="col-6">
+          <label for="dpoEmail">dpo.email</label>
+          <input id="dpoEmail" value="dpo@email.com" />
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>4) Controller</h2>
+      <div class="grid">
+        <div class="col-4">
+          <label for="controllerName">controller.name</label>
+          <input id="controllerName" value="PrivacyLib Inc." />
+        </div>
+        <div class="col-4">
+          <label for="controllerAddress">controller.address</label>
+          <input id="controllerAddress" value="123 Privacy St, Data City, PC1 2AB" />
+        </div>
+        <div class="col-4">
+          <label for="controllerEmail">controller.email</label>
+          <input id="controllerEmail" value="controller@email.com" />
+        </div>
+      </div>
+      <div class="muted">Make sure the key is <code>controller</code> (not “contoller”).</div>
+    </section>
+
+    <section>
+      <h2>5) Lawful purposes</h2>
+      <div class="row" style="margin-bottom:10px;">
+        <span class="pill">Add common purposes</span>
+        <button class="btn" id="addCommonPurposes" type="button">Add defaults</button>
+        <span class="muted">contract, legal_obligation, marketing</span>
+      </div>
+
+      <div class="grid">
+        <div class="col-8">
+          <label for="purposeInput">Add a purpose</label>
+          <input id="purposeInput" placeholder="e.g. contract" />
+        </div>
+        <div class="col-4" style="display:flex;align-items:end;">
+          <button class="btn primary" id="addPurposeBtn" type="button">Add</button>
+        </div>
+      </div>
+      <div id="purposesList" class="row" style="flex-wrap:wrap; margin-top:10px;"></div>
+      <div class="muted">Used by your lawful policy and the information report.</div>
+    </section>
+
+    <section>
+      <h2>6) Consents</h2>
+      <div class="grid">
+        <div class="col-3">
+          <label for="consentUserId">User ID</label>
+          <input id="consentUserId" placeholder="e.g. 1" />
+        </div>
+        <div class="col-3">
+          <label for="consentValue">Value</label>
+          <select id="consentValue">
+            <option value="yes">yes</option>
+            <option value="no">no</option>
+          </select>
+        </div>
+        <div class="col-3">
+          <label for="consentWithdrawn">Withdrawn</label>
+          <select id="consentWithdrawn">
+            <option value="false">false</option>
+            <option value="true">true</option>
+          </select>
+        </div>
+        <div class="col-3" style="display:flex;align-items:end;">
+          <button class="btn primary" id="addConsentBtn" type="button">Add/Update</button>
+        </div>
+      </div>
+
+      <div class="muted" style="margin-top:8px;">
+        Stored as <code>consents["&lt;id&gt;"]</code>.
+      </div>
+
+      <div id="consentsList" class="list" style="margin-top:10px;"></div>
+    </section>
+
+    <section>
+      <h2>7) Third parties</h2>
+      <div class="grid">
+        <div class="col-2">
+          <label for="tpId">ID</label>
+          <input id="tpId" placeholder="e.g. 1" />
+        </div>
+        <div class="col-4">
+          <label for="tpName">Name</label>
+          <input id="tpName" placeholder="e.g. Third Party A" />
+        </div>
+        <div class="col-6">
+          <label for="tpLegit">Legitimate interests (comma-separated)</label>
+          <input id="tpLegit" placeholder="e.g. trial,kati" />
+        </div>
+        <div class="col-12">
+          <button class="btn primary" id="addTpBtn" type="button">Add/Update third party</button>
+        </div>
+      </div>
+
+      <div id="tpsList" class="list" style="margin-top:10px;"></div>
+      <div class="muted">Your data items can reference a third party by putting <code>source</code> = that third party id (e.g. “1”).</div>
+    </section>
+
+    <section>
+      <h2>8) Users + data items</h2>
+
+      <div class="grid" style="margin-bottom:10px;">
+        <div class="col-6">
+          <label for="userIdInput">Add user id</label>
+          <input id="userIdInput" placeholder="e.g. 1" />
+        </div>
+        <div class="col-6" style="display:flex;align-items:end;gap:8px;">
+          <button class="btn primary" id="addUserBtn" type="button">Add user</button>
+          <span class="muted">Then add items below</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Add data item</div>
+          <div class="muted">Attach to a user</div>
+        </div>
+
+        <div class="grid">
+          <div class="col-3">
+            <label for="itemUserId">User ID</label>
+            <select id="itemUserId"></select>
+          </div>
+          <div class="col-3">
+            <label for="itemField">Field</label>
+            <input id="itemField" placeholder="e.g. email" />
+          </div>
+          <div class="col-3">
+            <label for="itemPurpose">Purpose</label>
+            <input id="itemPurpose" placeholder="e.g. contract" />
+          </div>
+          <div class="col-3">
+            <label for="itemPresented">Purpose presented</label>
+            <select id="itemPresented">
+              <option value="true">true</option>
+              <option value="false">false</option>
+            </select>
+          </div>
+
+          <div class="col-6">
+            <label for="itemSourceType">Source</label>
+            <select id="itemSourceType">
+              <option value="user">user</option>
+              <option value="third_party">third party (choose ID)</option>
+              <option value="custom">custom string</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label for="itemSourceValue">Source value</label>
+            <input id="itemSourceValue" placeholder="auto" disabled />
+          </div>
+
+          <div class="col-12">
+            <button class="btn primary" id="addItemBtn" type="button">Add data item</button>
+          </div>
+        </div>
+
+        <div class="muted" style="margin-top:8px;">
+          In your info policy, third-party notice triggers when <code>source != "user"</code>.
+        </div>
+      </div>
+
+      <div id="usersList" class="list" style="margin-top:12px;"></div>
+    </section>
+
+  </div>
+
+  <!-- RIGHT: PREVIEW + DOWNLOAD -->
+  <div class="list">
+    <section>
+      <h2>Preview</h2>
+      <div id="statusBox" class="ok" style="display:none;"></div>
+      <div id="warnBox" class="warn" style="display:none;"></div>
+      <pre id="jsonPreview">{}</pre>
+      <div class="row" style="margin-top:10px; justify-content:space-between;">
+        <button class="btn" id="copyBtn" type="button">Copy JSON</button>
+        <button class="btn primary" id="downloadBtn" type="button">Download input.json</button>
+      </div>
+      <div class="muted" style="margin-top:10px;">
+        Download creates a JSON file using your current selections.
+      </div>
+    </section>
+
+    <section>
+      <h2>Quick start template</h2>
+      <div class="muted" style="margin-bottom:8px;">
+        Click to load a starter dataset similar to your example.
+      </div>
+      <button class="btn" id="loadExampleBtn" type="button">Load example</button>
+    </section>
+
+    <section>
+      <h2>Notes</h2>
+      <ul class="muted" style="margin:0; padding-left: 16px; line-height:1.5;">
+        <li>Keep IDs consistent: use strings everywhere (e.g. "1").</li>
+        <li>For user 2 to be “third party”, set data item <code>source</code> to a third party ID (e.g. "1").</li>
+        <li>If OPA can’t find a user, your info rule may return no result.</li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<script>
+  // ---------- State ----------
+  const state = {
+    purposes: [],
+    consents: {},          // { "1": {value:"yes", withdrawn:false}, ... }
+    third_parties: [],     // [{id,name,legitimate_interest:[]}, ...]
+    users: [],             // [{id, data_items:[...]}]
+  };
+
+  // ---------- Helpers ----------
+  const $ = (id) => document.getElementById(id);
+  const show = (el, text) => { el.style.display = "block"; el.textContent = text; };
+  const hide = (el) => { el.style.display = "none"; el.textContent = ""; };
+
+  function uniquePush(arr, v) {
+    if (!arr.includes(v)) arr.push(v);
+  }
+
+  function toBool(s) { return String(s).toLowerCase() === "true"; }
+
+  function findUser(uid) {
+    return state.users.find(u => u.id === uid) || null;
+  }
+
+  function ensureUser(uid) {
+    let u = findUser(uid);
+    if (!u) {
+      u = { id: uid, data_items: [] };
+      state.users.push(u);
+    }
+    return u;
+  }
+
+  function ensureThirdParty(tp) {
+    const idx = state.third_parties.findIndex(x => x.id === tp.id);
+    if (idx >= 0) state.third_parties[idx] = tp;
+    else state.third_parties.push(tp);
+  }
+
+  function validateAndBuild() {
+    const warnBox = $("warnBox");
+    const okBox = $("statusBox");
+    hide(warnBox); hide(okBox);
+
+    const requestUserId = $("requestUserId").value.trim();
+    const storagePeriod = $("storagePeriod").value.trim();
+    const storageCriteria = $("storageCriteria").value.trim();
+    const dpoName = $("dpoName").value.trim();
+    const dpoEmail = $("dpoEmail").value.trim();
+    const controllerName = $("controllerName").value.trim();
+    const controllerAddress = $("controllerAddress").value.trim();
+    const controllerEmail = $("controllerEmail").value.trim();
+
+    const warnings = [];
+    if (!requestUserId) warnings.push("request.user_id is empty.");
+    if (!storagePeriod || !storageCriteria) warnings.push("storage.period or storage.criteria is empty.");
+    if (!dpoName || !dpoEmail) warnings.push("dpo.name or dpo.email is empty.");
+    if (!controllerName || !controllerAddress || !controllerEmail) warnings.push("controller details are incomplete.");
+
+    // type consistency hints
+    if (requestUserId && !state.users.some(u => u.id === requestUserId)) {
+      warnings.push(`request.user_id="${requestUserId}" is not present in users[].id (not required, but often expected).`);
+    }
+
+    // consent existence hint
+    if (requestUserId && !state.consents[requestUserId]) {
+      warnings.push(`No consent record for user "${requestUserId}". Your consent policy may treat it as not given.`);
+    }
+
+    // third-party reference hints
+    for (const u of state.users) {
+      for (const di of u.data_items) {
+        if (di.source !== "user") {
+          const tpExists = state.third_parties.some(tp => tp.id === di.source);
+          if (!tpExists) {
+            warnings.push(`User ${u.id} has data_item source="${di.source}" but no third_parties entry with id="${di.source}".`);
+          }
+        }
+      }
+    }
+
+    const inputJson = {
+      request: { user_id: requestUserId },
+      storage: { period: storagePeriod, criteria: storageCriteria },
+      dpo: { name: dpoName, email: dpoEmail },
+      controller: { name: controllerName, address: controllerAddress, email: controllerEmail },
+      consents: state.consents,
+      lawful_purposes: state.purposes,
+      third_parties: state.third_parties,
+      users: state.users
+    };
+
+    if (warnings.length) show(warnBox, warnings.join(" "));
+    else show(okBox, "Looks good. Preview is ready.");
+
+    return inputJson;
+  }
+
+  function refreshPreview() {
+    const obj = validateAndBuild();
+    $("jsonPreview").textContent = JSON.stringify(obj, null, 2);
+    refreshLists();
+  }
+
+  function refreshLists() {
+    // Purposes chips
+    const purposesEl = $("purposesList");
+    purposesEl.innerHTML = "";
+    state.purposes.forEach((p) => {
+      const chip = document.createElement("span");
+      chip.className = "pill";
+      chip.textContent = p;
+      const x = document.createElement("button");
+      x.className = "btn danger";
+      x.type = "button";
+      x.textContent = "Remove";
+      x.style.padding = "4px 8px";
+      x.onclick = () => { state.purposes = state.purposes.filter(v => v !== p); refreshPreview(); };
+      const wrap = document.createElement("span");
+      wrap.className = "row";
+      wrap.style.gap = "6px";
+      wrap.appendChild(chip);
+      wrap.appendChild(x);
+      purposesEl.appendChild(wrap);
+    });
+
+    // Consents list
+    const consentsEl = $("consentsList");
+    consentsEl.innerHTML = "";
+    Object.keys(state.consents).sort().forEach((uid) => {
+      const rec = state.consents[uid];
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">User ${uid}</div>
+          <div class="row">
+            <span class="pill">value: ${rec.value}</span>
+            <span class="pill">withdrawn: ${rec.withdrawn}</span>
+          </div>
+        </div>
+      `;
+      const row = document.createElement("div");
+      row.className = "row";
+      const del = document.createElement("button");
+      del.className = "btn danger";
+      del.type = "button";
+      del.textContent = "Delete";
+      del.onclick = () => { delete state.consents[uid]; refreshPreview(); };
+      row.appendChild(del);
+      card.appendChild(row);
+      consentsEl.appendChild(card);
+    });
+
+    // Third parties list
+    const tpsEl = $("tpsList");
+    tpsEl.innerHTML = "";
+    state.third_parties
+      .slice()
+      .sort((a,b) => a.id.localeCompare(b.id))
+      .forEach((tp) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">Third party ${tp.id} — ${tp.name}</div>
+            <span class="pill">${tp.legitimate_interest.length} interests</span>
+          </div>
+          <div class="muted">legitimate_interest: ${tp.legitimate_interest.join(", ") || "(none)"}</div>
+        `;
+        const row = document.createElement("div");
+        row.className = "row";
+        row.style.marginTop = "10px";
+        const del = document.createElement("button");
+        del.className = "btn danger";
+        del.type = "button";
+        del.textContent = "Delete";
+        del.onclick = () => {
+          state.third_parties = state.third_parties.filter(x => x.id !== tp.id);
+          refreshPreview();
+        };
+        row.appendChild(del);
+        card.appendChild(row);
+        tpsEl.appendChild(card);
+      });
+
+    // Users list
+    const usersEl = $("usersList");
+    usersEl.innerHTML = "";
+    state.users
+      .slice()
+      .sort((a,b) => a.id.localeCompare(b.id))
+      .forEach((u) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        const header = document.createElement("div");
+        header.className = "card-header";
+        header.innerHTML = `<div class="card-title">User ${u.id}</div><span class="pill">${u.data_items.length} items</span>`;
+        const del = document.createElement("button");
+        del.className = "btn danger";
+        del.type = "button";
+        del.textContent = "Delete user";
+        del.onclick = () => {
+          state.users = state.users.filter(x => x.id !== u.id);
+          refreshPreview();
+        };
+        header.appendChild(del);
+        card.appendChild(header);
+
+        if (u.data_items.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.textContent = "No data items yet.";
+          card.appendChild(empty);
+        } else {
+          u.data_items.forEach((di, idx) => {
+            const line = document.createElement("div");
+            line.className = "row";
+            line.style.justifyContent = "space-between";
+            line.style.borderTop = "1px solid #eef0f7";
+            line.style.paddingTop = "8px";
+            line.style.marginTop = "8px";
+            line.innerHTML = `
+              <div>
+                <div><b>${di.field}</b> — purpose: <code>${di.purpose}</code></div>
+                <div class="muted">source: <code>${di.source}</code>, purpose_presented: <code>${di.purpose_presented}</code></div>
+              </div>
+            `;
+            const rm = document.createElement("button");
+            rm.className = "btn danger";
+            rm.type = "button";
+            rm.textContent = "Remove";
+            rm.onclick = () => {
+              u.data_items.splice(idx, 1);
+              refreshPreview();
+            };
+            line.appendChild(rm);
+            card.appendChild(line);
+          });
+        }
+
+        usersEl.appendChild(card);
+      });
+
+    // User dropdown for adding items
+    const sel = $("itemUserId");
+    const current = sel.value;
+    sel.innerHTML = "";
+    const ids = state.users.map(u => u.id).sort((a,b)=>a.localeCompare(b));
+    if (ids.length === 0) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "Add a user first";
+      sel.appendChild(opt);
+      sel.disabled = true;
+    } else {
+      sel.disabled = false;
+      ids.forEach((id) => {
+        const opt = document.createElement("option");
+        opt.value = id;
+        opt.textContent = id;
+        sel.appendChild(opt);
+      });
+      if (ids.includes(current)) sel.value = current;
+    }
+
+    // source-value behavior for item source type
+    updateItemSourceUI();
+  }
+
+  function updateItemSourceUI() {
+    const type = $("itemSourceType").value;
+    const input = $("itemSourceValue");
+    input.disabled = false;
+
+    if (type === "user") {
+      input.value = "user";
+      input.disabled = true;
+      return;
+    }
+
+    if (type === "third_party") {
+      const tpIds = state.third_parties.map(tp => tp.id);
+      if (tpIds.length === 0) {
+        input.value = "";
+        input.placeholder = "Add a third party first";
+        input.disabled = true;
+      } else {
+        input.placeholder = "e.g. 1";
+        if (!tpIds.includes(input.value)) input.value = tpIds[0];
+      }
+      return;
+    }
+
+    // custom
+    input.placeholder = "e.g. partner_api";
+    if (input.value === "user") input.value = "";
+  }
+
+  // ---------- Wire up events ----------
+  [
+    "requestUserId","storagePeriod","storageCriteria","dpoName","dpoEmail",
+    "controllerName","controllerAddress","controllerEmail"
+  ].forEach(id => $(id).addEventListener("input", refreshPreview));
+
+  $("addCommonPurposes").onclick = () => {
+    ["contract","legal_obligation","marketing"].forEach(p => uniquePush(state.purposes, p));
+    refreshPreview();
+  };
+
+  $("addPurposeBtn").onclick = () => {
+    const p = $("purposeInput").value.trim();
+    if (!p) return;
+    uniquePush(state.purposes, p);
+    $("purposeInput").value = "";
+    refreshPreview();
+  };
+
+  $("addConsentBtn").onclick = () => {
+    const uid = $("consentUserId").value.trim();
+    if (!uid) return alert("Enter a user id for consent.");
+    state.consents[uid] = {
+      value: $("consentValue").value,
+      withdrawn: toBool($("consentWithdrawn").value)
+    };
+    $("consentUserId").value = "";
+    refreshPreview();
+  };
+
+  $("addTpBtn").onclick = () => {
+    const id = $("tpId").value.trim();
+    const name = $("tpName").value.trim();
+    if (!id || !name) return alert("Third party id and name are required.");
+    const legit = $("tpLegit").value.split(",").map(s => s.trim()).filter(Boolean);
+    ensureThirdParty({ id, name, legitimate_interest: legit });
+    $("tpId").value = ""; $("tpName").value = ""; $("tpLegit").value = "";
+    refreshPreview();
+  };
+
+  $("addUserBtn").onclick = () => {
+    const uid = $("userIdInput").value.trim();
+    if (!uid) return alert("Enter a user id.");
+    ensureUser(uid);
+    $("userIdInput").value = "";
+    refreshPreview();
+  };
+
+  $("itemSourceType").onchange = updateItemSourceUI;
+
+  $("addItemBtn").onclick = () => {
+    const uid = $("itemUserId").value;
+    if (!uid) return alert("Add a user first.");
+    const field = $("itemField").value.trim();
+    const purpose = $("itemPurpose").value.trim();
+    const presented = toBool($("itemPresented").value);
+
+    if (!field || !purpose) return alert("Field and purpose are required.");
+
+    let sourceType = $("itemSourceType").value;
+    let sourceVal = $("itemSourceValue").value.trim();
+
+    if (sourceType === "user") sourceVal = "user";
+    if (sourceType === "third_party") {
+      if (!sourceVal) return alert("Choose a third party id (source value).");
+    }
+    if (sourceType === "custom") {
+      if (!sourceVal) return alert("Enter a custom source string.");
+    }
+
+    const u = ensureUser(uid);
+    u.data_items.push({
+      field,
+      purpose,
+      source: sourceVal,
+      purpose_presented: presented
+    });
+
+    $("itemField").value = "";
+    $("itemPurpose").value = "";
+    $("itemPresented").value = "true";
+    $("itemSourceType").value = "user";
+    updateItemSourceUI();
+    refreshPreview();
+  };
+
+  $("copyBtn").onclick = async () => {
+    const obj = validateAndBuild();
+    const text = JSON.stringify(obj, null, 2);
+    await navigator.clipboard.writeText(text);
+    show($("statusBox"), "Copied JSON to clipboard.");
+    setTimeout(() => refreshPreview(), 800);
+  };
+
+  $("downloadBtn").onclick = () => {
+    const obj = validateAndBuild();
+    const text = JSON.stringify(obj, null, 2);
+    const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "input.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  $("loadExampleBtn").onclick = () => {
+    state.purposes = ["contract","legal_obligation","marketing"];
+    state.consents = {
+      "1": { value: "yes", withdrawn: false },
+      "2": { value: "yes", withdrawn: false },
+      "3": { value: "yes", withdrawn: true }
+    };
+    state.third_parties = [
+      { id: "1", name: "Third Party A", legitimate_interest: ["trial","kati"] }
+    ];
+    state.users = [
+      {
+        id: "1",
+        data_items: [
+          { field: "email", purpose: "contract", source: "user", purpose_presented: true },
+          { field: "age", purpose: "marketing", source: "user", purpose_presented: true }
+        ]
+      },
+      {
+        id: "2",
+        data_items: [
+          { field: "email", purpose: "katiallo", source: "1", purpose_presented: true }
+        ]
+      }
+    ];
+    // set request user id too
+    $("requestUserId").value = "1";
+    refreshPreview();
+  };
+
+  // Initial example-ish defaults
+  $("addCommonPurposes").click();
+  // seed a couple users so the dropdown isn't empty on first load
+  ensureUser("1");
+  ensureUser("2");
+  refreshPreview();
+</script>
+</body>
+</html>
