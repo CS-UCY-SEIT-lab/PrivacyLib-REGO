@@ -22,7 +22,7 @@ lawful_purpose(purpose) if {
 #
 # (3) check if system has presented the purpose of processing to the user
 # We assume each data item has "purpose_presented": true
-#
+# di stands for data item. A data item could be' email, age etc.'
 purpose_presented(di) if {
     di.purpose_presented == true
 }

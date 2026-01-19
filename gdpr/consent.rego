@@ -19,7 +19,7 @@ has_given_consent(user_id) if {
 }
 
 #
-# (2) Consent not withdrawn
+# (2) Consent is withdrawn
 #
 consent_withdrawn(user_id) if {
     rec := consent_record(user_id)

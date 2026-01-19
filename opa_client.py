@@ -15,3 +15,28 @@ def call_consent_policy(user_id: str, input_data: dict) -> bool:
         return False
 
     return bool(results[0]["x"])
+
+def call_lawful_policy(user_id: str, input_data: dict) -> bool:
+    """
+    Calls data.lawful.lawful_processing(user_id)
+    and returns True/False properly.
+    """
+
+    query = f'x := data.lawful.lawful_processing("{user_id}")'
+
+    payload = {
+        "query": query,
+        "input": input_data,
+    }
+
+    res = requests.post(OPA_QUERY_URL, json=payload)
+    res.raise_for_status()
+
+    data = res.json()
+    results = data.get("result", [])
+
+    if not results:
+        return False
+
+    # OPA returns {"result": [{"x": true/false}]}
+    return bool(results[0]["x"])

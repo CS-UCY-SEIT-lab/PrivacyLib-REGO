@@ -5,7 +5,7 @@
 
   "consents": {
     "1": { "value": "yes", "withdrawn": false },
-    "2": { "value": "no",  "withdrawn": false },
+    "2": { "value": "yes",  "withdrawn": false },
     "3": { "value": "yes", "withdrawn": true }
   },
 
@@ -17,7 +17,7 @@
 
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "data_items": [
         {
           "field": "email",
@@ -34,7 +34,7 @@
       ]
     },
     {
-      "id": 2,
+      "id": "2",
       "data_items": [
         {
           "field": "email",
