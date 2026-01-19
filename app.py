@@ -1,5 +1,5 @@
 import json
-from opa_client import call_consent_policy, call_lawful_policy
+from opa_client import call_consent_policy, call_lawful_policy,call_information_policy
 
 with open("gdpr/input.json", "r", encoding="utf-8") as f:
     base_input = json.load(f)
@@ -19,7 +19,8 @@ for uid in ["1", "2", "3"]:
     else:
         print(f"user {uid}: NOT allowed to store/process data")
 '''
-
+'''
+IM USING THE CODE BELOW TO TEST LAWFUL POLICY
 for uid in ["1", "2", "3"]:
     decision = lawful_processing(uid)
     print(decision)
@@ -28,3 +29,15 @@ for uid in ["1", "2", "3"]:
         print(f"user {uid}: LAWFUL to process/store data")
     else:
         print(f"user {uid}: NOT lawful to process/store data")
+'''
+
+for uid in ["1", "2", "3"]:
+        result = call_information_policy(uid, base_input)
+
+        print(f"\n=== information report for user {uid} ===")
+        if not result:
+            print("No result (user not found / rule did not match).")
+            continue
+
+        # Pretty-print the JSON object returned by OPA
+        print(json.dumps(result, indent=2))

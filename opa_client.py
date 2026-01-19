@@ -40,3 +40,26 @@ def call_lawful_policy(user_id: str, input_data: dict) -> bool:
 
     # OPA returns {"result": [{"x": true/false}]}
     return bool(results[0]["x"])
+
+def call_information_policy(user_id: str, input_data: dict) -> dict:
+    """
+    Calls: data.information.information(user_id)
+    Returns the resulting object (dict).
+    """
+    query = f'x := data.information.information("{user_id}")'
+
+    payload = {
+        "query": query,
+        "input": input_data,
+    }
+
+    res = requests.post(OPA_QUERY_URL, json=payload)
+    res.raise_for_status()
+
+    data = res.json()
+    results = data.get("result", [])
+    if not results:
+        return {}
+
+   
+    return results[0].get("x", {})

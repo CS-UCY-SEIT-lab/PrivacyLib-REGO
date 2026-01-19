@@ -1,20 +1,46 @@
 {
   "request": {
-    "user_id": 1
+    "user_id": "1"
   },
-
+  "storage": {
+    "period": "2 years",
+    "criteria": "standard retention policy"
+  },
+  "dpo": {
+    "name": "Data Protection Officer Joe Bloggs",
+    "email": "dpo@email.com"
+  },
+  "controller": {
+    "name": "PrivacyLib Inc.",
+    "address": "123 Privacy St, Data City, PC1 2AB",
+    "email": "controller@email.com"
+  },
   "consents": {
-    "1": { "value": "yes", "withdrawn": false },
-    "2": { "value": "yes",  "withdrawn": false },
-    "3": { "value": "yes", "withdrawn": true }
+    "1": {
+      "value": "yes",
+      "withdrawn": false
+    },
+    "2": {
+      "value": "yes",
+      "withdrawn": false
+    },
+    "3": {
+      "value": "yes",
+      "withdrawn": true
+    }
   },
-
   "lawful_purposes": [
     "contract",
     "legal_obligation",
     "marketing"
   ],
-
+  "third_parties": [
+    {
+      "id": "1",
+      "name": "Third Party A",
+      "legitimate_interest": ["trial", "kati"]
+    }
+  ],
   "users": [
     {
       "id": "1",
@@ -39,7 +65,7 @@
         {
           "field": "email",
           "purpose": "katiallo",
-          "source": "user",
+          "source": "1",
           "purpose_presented": true
         }
       ]
