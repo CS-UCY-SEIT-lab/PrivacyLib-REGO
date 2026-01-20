@@ -62,14 +62,14 @@
       "data_items": [
         {
           "field": "email",
-          "value": "email@email.com",
+          "value": "new@email.com",
           "purpose": "contract",
           "source": "user",
           "purpose_presented": true
         },
         {
           "field": "age",
-          "value": "21",
+          "value": "22",
           "purpose": "marketing",
           "source": "user",
           "purpose_presented": true

@@ -1,26 +1,37 @@
 import json
-from opa_client import call_consent_policy, call_lawful_policy,call_information_policy,call_access_policy
+from copy import deepcopy
+from opa_client import call_consent_policy, call_lawful_policy,call_information_policy,call_access_policy,call_rectification_policy
+
+def load_input(path: str) -> dict:
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_json(path: str, obj: dict) -> None:
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f, indent=2)
 
 with open("gdpr/input.json", "r", encoding="utf-8") as f:
     base_input = json.load(f)
 
 def may_process_or_store(user_id: str) -> bool:
     return call_consent_policy(user_id, base_input)
-
-def lawful_processing(user_id: str) -> bool:
-    return call_lawful_policy(user_id, base_input)
-
 '''
 IM USING THE CODE BELOW TO TEST CONSENT POLICY
+'''
 for uid in ["1", "2", "3"]:
     print(may_process_or_store(uid))
     if may_process_or_store(uid):
         print(f"user {uid}: OK to store/process data")
     else:
         print(f"user {uid}: NOT allowed to store/process data")
-'''
+
+
+def lawful_processing(user_id: str) -> bool:
+    return call_lawful_policy(user_id, base_input)
+
 '''
 IM USING THE CODE BELOW TO TEST LAWFUL POLICY
+'''
 for uid in ["1", "2", "3"]:
     decision = lawful_processing(uid)
     print(decision)
@@ -29,9 +40,9 @@ for uid in ["1", "2", "3"]:
         print(f"user {uid}: LAWFUL to process/store data")
     else:
         print(f"user {uid}: NOT lawful to process/store data")
-'''
-'''IM USING THE CODE BELOW TO TEST INFORMATION POLICY
 
+'''IM USING THE CODE BELOW TO TEST INFORMATION POLICY
+'''
 for uid in ["1", "2", "3"]:
         result = call_information_policy(uid, base_input)
 
@@ -42,7 +53,7 @@ for uid in ["1", "2", "3"]:
 
         # Pretty-print the JSON object returned by OPA
         print(json.dumps(result, indent=2))
-'''
+
 
 def save_access_download(access_result: dict) -> None:
     """
@@ -63,7 +74,9 @@ def save_access_download(access_result: dict) -> None:
         f.write(content)
 
     print(f"[+] Download created: {filename}")
-    
+
+'''IM USING THE CODE BELOW TO TEST ACCESS POLICY   
+''' 
 for uid in ["1", "2", "3"]:
     
     print(f"\n=== access response for user {uid} ===")
@@ -75,3 +88,56 @@ for uid in ["1", "2", "3"]:
 
     print(json.dumps(access_result, indent=2))
     save_access_download(access_result)
+
+
+def apply_db_update_plan(input_data: dict, plan: list[dict]) -> dict:
+    """
+    OPTIONAL helper:
+    Simulates updating the DB by applying updates to input_data["users"][].data_items.
+    This only works if your data_items contain a "value" field.
+    """
+    updated = deepcopy(input_data)
+
+    for step in plan:
+        uid = step.get("user_id")
+        field = step.get("field")
+        new_value = step.get("new_value")
+
+        # find user
+        user = next((u for u in updated.get("users", []) if u.get("id") == uid), None)
+        if not user:
+            continue
+
+        # find data_item by field
+        di = next((d for d in user.get("data_items", []) if d.get("field") == field), None)
+        if not di:
+            continue
+
+        # set value (if your schema supports it)
+        di["value"] = new_value
+
+    return updated
+
+for uid in ["1", "2", "3"]:
+        print("\n" + "=" * 60)
+        print(f"RECTIFICATION RESPONSE FOR USER {uid}")
+        print("=" * 60)
+
+        result = call_rectification_policy(uid, base_input)
+
+        if not result:
+            print("No result (policy returned empty).")
+            continue
+
+        print(json.dumps(result, indent=2))
+
+        plan = result.get("db_update_plan", [])
+        print("\n--- db_update_plan ---")
+        print(json.dumps(plan, indent=2))
+
+        # simulation: applying the update and write a new JSON file
+        if result.get("request", {}).get("validated") and plan:
+            updated = apply_db_update_plan(base_input, plan)
+            out_path = "gdpr/input_updated.json"
+            save_json(out_path, updated)
+            print(f"\n[+] Wrote simulated updated input to: {out_path}")

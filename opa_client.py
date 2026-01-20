@@ -81,3 +81,22 @@ def call_access_policy(user_id: str, input_data: dict) -> dict:
         return {}
 
     return results[0].get("x", {})
+
+def call_rectification_policy(user_id: str, input_data: dict) -> dict:
+    query = f'x := data.rectification.rectification_response("{user_id}")'
+    payload = {"query": query, "input": input_data}
+
+    res = requests.post(OPA_QUERY_URL, json=payload)
+
+    # 👇 show OPA's error message instead of just "400 Bad Request"
+    if res.status_code != 200:
+        print("OPA status:", res.status_code)
+        print("OPA response body:", res.text)
+        print("OPA query was:", query)
+        raise RuntimeError("OPA query failed")
+
+    data = res.json()
+    results = data.get("result", [])
+    if not results:
+        return {}
+    return results[0].get("x", {})
