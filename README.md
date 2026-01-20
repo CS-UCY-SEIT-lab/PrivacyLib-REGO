@@ -1,65 +1,54 @@
-# GDPR Policy Enforcement with OPA & Python API
+# GDPR Policy Enforcement with OPA & Python
 
-This project enforces **GDPR consent, lawful processing, and the Right to Information (Articles 13 & 14)** using:
+This project demonstrates how to implement and enforce GDPR requirements using:
 
-- Open Policy Agent (OPA) with Rego
-- A Python API client
-- Structured GDPR input data
+- **Open Policy Agent (OPA)** with **Rego**
+- A **Python client** that queries OPA over HTTP
+- A structured **`input.json`** data model
 
-It provides:
+The project covers the following GDPR rights and principles:
+
 - Consent validation
-- Lawful processing validation
-- Full GDPR Right-to-Information output
-- A Python API that queries OPA over HTTP
+- Lawful processing
+- Right to Information (Articles 13 & 14)
+- Right of Access (Article 15)
+- Right to Rectification (Article 16)
+
+OPA is used only for **decision-making**.  
+All side effects (UI rendering, database updates, emails, downloads, logging) are handled by the application.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
+```text
 PrivacyLib-REGO/
 │
 ├── gdpr/
 │ ├── consent.rego
 │ ├── lawful.rego
 │ ├── information.rego
-│ ├── input.json
+│ ├── access.rego
+│ ├── rectification.rego
+│ └── input.json
 │
-├── app.py
 ├── opa_client.py
+├── app.py
 └── README.md
-
----
-
+└── privacyLibInputGenerator.html
+```
 ## Requirements
 
-- ✅ **OPA v1.10+**
-- ✅ **Python 3.9+**
-- ✅ **pip**
-- ✅ Python dependency:
+- **Open Policy Agent (OPA)** (latest stable recommended)
+- **Python 3.9+**
+- Python dependency:
   ```bash
   pip install requests
-  cd gdpr
----
-## 1.1 Run Consent Policy
+  ```
+## START OPA SERVER
   ```bash
-    opa eval --format pretty --data . --input input.json 'data.consent.may_process_or_store(1)'
-    opa eval --format pretty --data . --input input.json 'data.consent.may_process_or_store(2)'
-    opa eval --format pretty --data . --input input.json 'data.consent.may_process_or_store(3)'
-    expexted Results:
-    | User | Result | Reason            |
-    | ---- | ------ | ----------------- |
-    | 1    | true   | Consent given     |
-    | 2    | false  | Consent denied    |
-    | 3    | false  | Consent withdrawn |
-
----
-
-## 1.2 Run Lawful Processing Policy
-    ```bash
-    opa eval --format pretty --data . --input input.json 'data.lawful.lawful_processing(1)'
-    opa eval --format pretty --data . --input input.json 'data.lawful.lawful_processing(2)'
-
----
-## 1.3 Run Right-to-Information Policy (GDPR Art. 13/14)
+  opa run --server --watch gdpr/
+  ```
+## RUNNING THE PYTHON APPLICATION
   ```bash
-  opa eval --format pretty --data . --input input.json 'data.information.information(1)'
-  opa eval --format pretty --data . --input input.json 'data.information.information(2)'
+  python app.py
+  ```
