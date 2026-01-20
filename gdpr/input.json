@@ -1,6 +1,8 @@
 {
   "request": {
-    "user_id": "1"
+    "access": {
+      "user_id": "1"
+    }
   },
   "storage": {
     "period": "2 years",
@@ -38,7 +40,10 @@
     {
       "id": "1",
       "name": "Third Party A",
-      "legitimate_interest": ["trial", "kati"]
+      "legitimate_interest": [
+        "trial",
+        "kati"
+      ]
     }
   ],
   "users": [

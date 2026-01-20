@@ -1,5 +1,5 @@
 import json
-from opa_client import call_consent_policy, call_lawful_policy,call_information_policy
+from opa_client import call_consent_policy, call_lawful_policy,call_information_policy,call_access_policy
 
 with open("gdpr/input.json", "r", encoding="utf-8") as f:
     base_input = json.load(f)
@@ -30,6 +30,7 @@ for uid in ["1", "2", "3"]:
     else:
         print(f"user {uid}: NOT lawful to process/store data")
 '''
+'''IM USING THE CODE BELOW TO TEST INFORMATION POLICY
 
 for uid in ["1", "2", "3"]:
         result = call_information_policy(uid, base_input)
@@ -41,3 +42,36 @@ for uid in ["1", "2", "3"]:
 
         # Pretty-print the JSON object returned by OPA
         print(json.dumps(result, indent=2))
+'''
+
+def save_access_download(access_result: dict) -> None:
+    """
+    access.rego returns:
+      "download": { "filename": "...", "mime": "...", "content": "<json string>" }
+    
+    """
+    dl = access_result.get("download")
+    if not dl:
+        return
+
+    filename = dl.get("filename")
+    content = dl.get("content")
+    if not filename or not content:
+        return
+
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    print(f"[+] Download created: {filename}")
+    
+for uid in ["1", "2", "3"]:
+    
+    print(f"\n=== access response for user {uid} ===")
+    access_result = call_access_policy(uid, base_input)
+
+    if not access_result:
+        print("No result (policy returned empty).")
+        continue
+
+    print(json.dumps(access_result, indent=2))
+    save_access_download(access_result)

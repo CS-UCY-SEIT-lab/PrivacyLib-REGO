@@ -63,3 +63,21 @@ def call_information_policy(user_id: str, input_data: dict) -> dict:
 
    
     return results[0].get("x", {})
+
+def call_access_policy(user_id: str, input_data: dict) -> dict:
+    """
+    Calls: data.access.access_response(user_id)
+    Returns the resulting object (dict).
+    """
+    query = f'x := data.access.access_response("{user_id}")'
+    payload = {"query": query, "input": input_data}
+
+    res = requests.post(OPA_QUERY_URL, json=payload)
+    res.raise_for_status()
+
+    data = res.json()
+    results = data.get("result", [])
+    if not results:
+        return {}
+
+    return results[0].get("x", {})
