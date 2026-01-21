@@ -12,7 +12,24 @@
         "uknown_field": "kserogo"
       },
       "request_id": "req-123"
+    },
+    "erasure": {
+      "user_id": "1",
+      "target_user_id": "1",
+      "request_id": "erase-001",
+      "reason": "withdrawn_consent",
+      "fields": [
+        "email",
+        "age"
+      ]
     }
+  },
+  "exceptions": {
+    "legal_obligation": [
+      "email"
+    ],
+    "public_interest": [],
+    "legal_claims": []
   },
   "storage": {
     "period": "2 years",
