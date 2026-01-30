@@ -1,4 +1,23 @@
 {
+  "breach": {
+    "detected": true,
+    "incident_id": "INC-2026-001",
+    "hours_since_detected": 0.5,
+    "summary": "Unauthorized access to a customer database.",
+    "categories": [
+      "email"
+    ],
+    "risks": [
+      "identity_theft",
+      "rights_freedoms"
+    ],
+    "mitigations": "We revoked compromised credentials and rotated secrets.",
+    "user_actions": "Be alert for phishing emails and consider changing passwords.",
+    "affected_users": [
+      "2",
+      "1"
+    ]
+  },
   "request": {
     "access": {
       "user_id": "1"
@@ -22,8 +41,60 @@
         "email",
         "age"
       ]
+    },
+    "restriction": {
+      "user_id": "1",
+      "target_user_id": "1",
+      "request_id": "restrict-001",
+      "reason": "data_inaccuracy_suspicion",
+      "fields": [
+        "email",
+        "age"
+      ],
+      "checks": {
+        "data_correct": false,
+        "purpose_valid": true,
+        "legitimate_interest_overrides": true
+      }
+    },
+    "portability": {
+      "user_id": "1",
+      "target_user_id": "1",
+      "request_id": "port-001",
+      "transfer_requested": true,
+      "transfer_service_id": "svcA"
+    },
+    "objection": {
+      "user_id": "1",
+      "target_user_id": "1",
+      "request_id": "obj-002",
+      "reason": "legitimate_interest",
+      "fields": [
+        "email",
+        "age"
+      ],
+      "checks": {
+        "processing_is_necessary": true
+      }
+    },
+    "complaint": {
+      "user_id": "1",
+      "request_id": "cmp-001",
+      "authority_id": "cy-0000",
+      "description": "I believe my data was used for marketing without my consent."
     }
   },
+  "services": [
+    {
+      "id": "svcA",
+      "name": "Example Service A",
+      "supports_portability": true,
+      "supported_formats": [
+        "json",
+        "csv"
+      ]
+    }
+  ],
   "exceptions": {
     "legal_obligation": [
       "email"
@@ -103,6 +174,22 @@
           "purpose_presented": true
         }
       ]
+    }
+  ],
+  "supervisory_authorities": [
+    {
+      "id": "cy-0000",
+      "name": "Office of the Commissioner for Personal Data Protection (Cyprus)",
+      "country": "Cyprus",
+      "channel": "email",
+      "endpoint": "complaints@dataprotection.gov.cy"
+    },
+    {
+      "id": "ie-dpc",
+      "name": "Data Protection Commission (Ireland)",
+      "country": "Ireland",
+      "channel": "webform",
+      "endpoint": "https://forms.dataprotection.ie/contact"
     }
   ]
 }

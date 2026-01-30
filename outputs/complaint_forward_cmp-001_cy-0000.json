@@ -1,0 +1,14 @@
+{
+  "authority": {
+    "channel": "email",
+    "country": "Cyprus",
+    "endpoint": "complaints@dataprotection.gov.cy",
+    "id": "cy-0000",
+    "name": "Office of the Commissioner for Personal Data Protection (Cyprus)"
+  },
+  "payload": {
+    "description": "I believe my data was used for marketing without my consent.",
+    "request_id": "cmp-001",
+    "user_id": "1"
+  }
+}

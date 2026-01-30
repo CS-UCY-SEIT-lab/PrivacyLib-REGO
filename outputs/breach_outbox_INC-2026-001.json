@@ -1,0 +1,8 @@
+{
+  "incident_id": "INC-2026-001",
+  "message": "Data breach notification (Incident INC-2026-001)\n\nSummary: Unauthorized access to a customer database.\nCategories of data: [\"email\"]\nWhen detected: 0.5 hours ago\nWhat we are doing: We revoked compromised credentials and rotated secrets.\nWhat you can do: Be alert for phishing emails and consider changing passwords.\nContact: dpo@email.com",
+  "users": [
+    "2",
+    "1"
+  ]
+}

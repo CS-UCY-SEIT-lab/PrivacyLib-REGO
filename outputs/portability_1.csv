@@ -1,0 +1,3 @@
+field,value,purpose,source,purpose_presented,restricted
+email,email@email.com,contract,user,true,false
+age,21,marketing,user,true,false
