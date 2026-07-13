@@ -89,4 +89,22 @@ lawful_processing(user_id) := false if {
     exists_unlawful_data(user_id)
 }
 
+# Audit log
+audit_event(user_id) := evt if {
+    lawful_request := object.get(input.request, "lawful", {})
+    request_user_id := object.get(lawful_request, "user_id", user_id)
 
+    evt := {
+        "type": "lawfulness_check_request",
+        "request_user_id": request_user_id,
+        "target_user_id": user_id,
+        "lawful_processing": lawful_processing(user_id)
+    }
+}
+
+# Action output for app/logging
+actions(user_id) := out if {
+    out := {
+        "log_audit": audit_event(user_id)
+    }
+}
