@@ -71,6 +71,29 @@ format_tp_item(di) := out if {
   }
 }
 
+# Inform third parties of the access request after retrieving data linked to them.
+third_party_access_notifications(user_id) := notes if {
+  valid_request(user_id)
+  notes := [n |
+    tp := input.third_parties[_]
+    fields := [format_tp_item(di) |
+      di := third_party_items(user_id)[_]
+      di.source == tp.id
+    ]
+    count(fields) > 0
+    n := {
+      "third_party_id": tp.id,
+      "third_party_name": tp.name,
+      "request_type": "right_to_access",
+      "target_user_id": user_id,
+      "message": "User has submitted a right of access request involving personal data linked to this third party.",
+      "data_items": fields
+    }
+  ]
+} else := [] if {
+  true
+}
+
 # (5) Create downloadable format (stringified JSON)
 download_payload(user_id) := payload if {
   payload := {
@@ -84,6 +107,10 @@ download_payload(user_id) := payload if {
     ],
 
     "data_from_third_parties": [format_tp_item(di) |
+      di := third_party_items(user_id)[_]
+    ],
+
+    "data_sent_to_third_parties": [format_tp_item(di) |
       di := third_party_items(user_id)[_]
     ],
 
@@ -125,6 +152,7 @@ access_response(user_id) := result if {
 
   first := [format_item(di) | di := first_party_items(user_id)[_]]
   third := [format_tp_item(di) | di := third_party_items(user_id)[_]]
+  third_party_notifications := third_party_access_notifications(user_id)
   dl := download_object(user_id)
 
   result := {
@@ -138,8 +166,11 @@ access_response(user_id) := result if {
 
     "personal_data": {
       "collected_from_user": first,
-      "from_third_parties": third
+      "from_third_parties": third,
+      "sent_to_third_parties": third
     },
+
+    "inform_third_parties_of_access_request": third_party_notifications,
 
     "download": dl,
 
