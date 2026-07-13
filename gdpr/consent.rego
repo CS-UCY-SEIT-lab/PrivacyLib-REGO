@@ -42,3 +42,26 @@ may_process_or_store(user_id) := false if {
     consent_withdrawn(user_id)
 }
 
+# Confirm withdrawal completion
+withdrawal_confirmation(user_id) := confirmation if {
+    consent_withdrawn(user_id)
+    confirmation := {
+        "status": "completed",
+        "user_id": user_id,
+        "message": "Consent withdrawal completed."
+    }
+} else := confirmation if {
+    not consent_withdrawn(user_id)
+    confirmation := {
+        "status": "not_withdrawn",
+        "user_id": user_id,
+        "message": "Consent has not been withdrawn."
+    }
+}
+
+# Action output for app
+actions(user_id) := out if {
+    out := {
+        "confirm_withdrawal_completion": withdrawal_confirmation(user_id)
+    }
+}
