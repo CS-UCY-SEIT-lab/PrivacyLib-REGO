@@ -13,6 +13,12 @@ valid_request(user_id) if {
   input.request.access.user_id == user_id
 }
 
+valid_request_value(user_id) := true if {
+  valid_request(user_id)
+} else := false if {
+  true
+}
+
 # Find user object by id
 user_obj(user_id) := user if {
   some i
@@ -140,8 +146,8 @@ audit_record(user_id) := rec if {
   rec := {
     "event": "RIGHT_TO_ACCESS_REQUEST",
     "user_id": user_id,
-    "validated": valid_request(user_id),
-    "has_download_payload": valid_request(user_id)
+    "validated": valid_request_value(user_id),
+    "has_download_payload": valid_request_value(user_id)
   }
 }
 

@@ -8,6 +8,12 @@ valid_request if {
   req.user_id != ""
 }
 
+valid_request_value := true if {
+  valid_request
+} else := false if {
+  true
+}
+
 # -----------------------------
 # Helpers
 # -----------------------------
@@ -140,7 +146,7 @@ audit_record(user_id) := rec if {
     "request_id": req.request_id,
     "requester_user_id": req.user_id,
     "target_user_id": user_id,
-    "validated": valid_request,
+    "validated": valid_request_value,
     "accepted_count": count(accepted_updates(user_id)),
     "rejected_count": count(rejected_updates(user_id))
   }
