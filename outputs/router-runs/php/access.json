@@ -1,0 +1,62 @@
+{
+  "audit": {
+    "event": "RIGHT_TO_ACCESS_REQUEST",
+    "has_download_payload": true,
+    "user_id": "1",
+    "validated": true
+  },
+  "controller": {
+    "address": "123 Privacy St, Data City, PC1 2AB",
+    "email": "controller@email.com",
+    "name": "PrivacyLib Inc."
+  },
+  "deliver_to_user": {
+    "include_download": true,
+    "include_in_response": true
+  },
+  "download": {
+    "content": "{\"controller\":{\"address\":\"123 Privacy St, Data City, PC1 2AB\",\"email\":\"controller@email.com\",\"name\":\"PrivacyLib Inc.\"},\"data_collected_from_user\":[{\"field\":\"email\",\"purpose\":\"contract\",\"purpose_presented\":true,\"source\":\"user\"},{\"field\":\"age\",\"purpose\":\"marketing\",\"purpose_presented\":true,\"source\":\"user\"}],\"data_from_third_parties\":[],\"data_sent_to_third_parties\":[],\"dpo\":{\"email\":\"dpo@email.com\",\"name\":\"Data Protection Officer Joe Bloggs\"},\"rights_notice\":{\"access\":true,\"data_portability\":true,\"erasure\":true,\"objection\":true,\"rectification\":true,\"restriction\":true,\"withdraw_consent_any_time\":true},\"storage\":{\"criteria\":\"standard retention policy\",\"period\":\"2 years\"},\"user_id\":\"1\"}",
+    "filename": "access_1.json",
+    "mime": "application/json"
+  },
+  "dpo": {
+    "email": "dpo@email.com",
+    "name": "Data Protection Officer Joe Bloggs"
+  },
+  "inform_third_parties_of_access_request": [],
+  "personal_data": {
+    "collected_from_user": [
+      {
+        "field": "email",
+        "purpose": "contract",
+        "purpose_presented": true,
+        "source": "user"
+      },
+      {
+        "field": "age",
+        "purpose": "marketing",
+        "purpose_presented": true,
+        "source": "user"
+      }
+    ],
+    "from_third_parties": [],
+    "sent_to_third_parties": []
+  },
+  "request": {
+    "user_id": "1",
+    "validated": true
+  },
+  "rights_notice": {
+    "access": true,
+    "data_portability": true,
+    "erasure": true,
+    "objection": true,
+    "rectification": true,
+    "restriction": true,
+    "withdraw_consent_any_time": true
+  },
+  "storage": {
+    "criteria": "standard retention policy",
+    "period": "2 years"
+  }
+}

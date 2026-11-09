@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from copy import deepcopy
 from opa_client import (call_consent_policy, 
                         call_lawful_policy,
@@ -13,7 +14,7 @@ def save_json(path: str, obj: dict) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(obj, f, indent=2)
 
-with open("gdpr/input.json", "r", encoding="utf-8") as f:
+with (Path(__file__).resolve().parents[1] / "gdpr/input.json").open("r", encoding="utf-8") as f:
     base_input = json.load(f)
 
 def may_process_or_store(user_id: str) -> bool:

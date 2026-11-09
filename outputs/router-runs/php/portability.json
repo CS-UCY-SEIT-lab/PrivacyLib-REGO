@@ -1,0 +1,163 @@
+{
+  "decision": "accept",
+  "justification": [],
+  "actions": {
+    "ask_transfer": {
+      "requested": true,
+      "service_id": "svcA"
+    },
+    "check_consent_and_legal_basis": {
+      "consent_valid": true,
+      "data_items": [
+        {
+          "field": "email",
+          "legal_basis": "contract",
+          "purpose": "contract",
+          "purpose_presented": true,
+          "source": "user"
+        },
+        {
+          "field": "age",
+          "legal_basis": "consent",
+          "purpose": "marketing",
+          "purpose_presented": true,
+          "source": "user"
+        }
+      ],
+      "instruction": "check consent and legal basis",
+      "lawful_processing": true,
+      "target_user_id": "1"
+    },
+    "downloads": [
+      {
+        "content": {
+          "consent": {
+            "value": "yes",
+            "withdrawn": false
+          },
+          "controller": {
+            "address": "123 Privacy St, Data City, PC1 2AB",
+            "email": "controller@email.com",
+            "name": "PrivacyLib Inc."
+          },
+          "data_items": [
+            {
+              "field": "email",
+              "purpose": "contract",
+              "purpose_presented": true,
+              "source": "user",
+              "value": "email@email.com"
+            },
+            {
+              "field": "age",
+              "purpose": "marketing",
+              "purpose_presented": true,
+              "source": "user",
+              "value": "21"
+            }
+          ],
+          "dpo": {
+            "email": "dpo@email.com",
+            "name": "Data Protection Officer Joe Bloggs"
+          },
+          "user_id": "1"
+        },
+        "filename": "portability_1.json",
+        "mime": "application/json"
+      },
+      {
+        "content": "field,value,purpose,source,purpose_presented,restricted\nemail,email@email.com,contract,user,true,false\nage,21,marketing,user,true,false",
+        "filename": "portability_1.csv",
+        "mime": "text/csv"
+      }
+    ],
+    "email_user": {
+      "attachments": [
+        "portability_1.json",
+        "portability_1.csv"
+      ],
+      "subject": "Your personal data export (data portability)",
+      "to_user_id": "1"
+    },
+    "log_audit": {
+      "decision": "accept",
+      "request_id": "port-001",
+      "requester_user_id": "1",
+      "target_user_id": "1",
+      "transfer_requested": true,
+      "transfer_service_id": "svcA",
+      "type": "data_portability_request"
+    },
+    "log_transfer": {
+      "request_id": "port-001",
+      "status": "started",
+      "target_user_id": "1",
+      "to_service_id": "svcA",
+      "type": "data_portability_transfer"
+    },
+    "notify_user": {
+      "decision": "accept",
+      "message": "Transfer initiated to Example Service A.",
+      "request_id": "port-001"
+    },
+    "present_purposes": [
+      {
+        "field": "email",
+        "purpose": "contract"
+      },
+      {
+        "field": "age",
+        "purpose": "marketing"
+      }
+    ],
+    "transfer": {
+      "formats": {
+        "csv": {
+          "filename": "portability_1.csv",
+          "mime": "text/csv"
+        },
+        "json": {
+          "filename": "portability_1.json",
+          "mime": "application/json"
+        }
+      },
+      "payload": {
+        "csv_content": "field,value,purpose,source,purpose_presented,restricted\nemail,email@email.com,contract,user,true,false\nage,21,marketing,user,true,false",
+        "json_content": {
+          "consent": {
+            "value": "yes",
+            "withdrawn": false
+          },
+          "controller": {
+            "address": "123 Privacy St, Data City, PC1 2AB",
+            "email": "controller@email.com",
+            "name": "PrivacyLib Inc."
+          },
+          "data_items": [
+            {
+              "field": "email",
+              "purpose": "contract",
+              "purpose_presented": true,
+              "source": "user",
+              "value": "email@email.com"
+            },
+            {
+              "field": "age",
+              "purpose": "marketing",
+              "purpose_presented": true,
+              "source": "user",
+              "value": "21"
+            }
+          ],
+          "dpo": {
+            "email": "dpo@email.com",
+            "name": "Data Protection Officer Joe Bloggs"
+          },
+          "user_id": "1"
+        }
+      },
+      "to_service_id": "svcA",
+      "to_service_name": "Example Service A"
+    }
+  }
+}

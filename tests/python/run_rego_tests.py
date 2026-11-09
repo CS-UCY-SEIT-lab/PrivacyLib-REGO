@@ -6,15 +6,16 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any, Callable
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 POLICY_DIR = ROOT / "gdpr"
 BASE_INPUT = POLICY_DIR / "input.json"
-FIXTURE_DIR = ROOT / "unit testing" / "inputs"
+FIXTURE_DIR = ROOT / "tests" / "fixtures" / "inputs"
+SCENARIOS = ROOT / "tests" / "fixtures" / "scenarios.json"
 
 
 InputMutator = Callable[[dict[str, Any]], None]
@@ -53,6 +54,11 @@ class CaseResult:
     coverage: dict[str, Any] | None = None
 
 
+def described(check: Expectation, spec: dict[str, Any]) -> Expectation:
+    check.spec = spec
+    return check
+
+
 def at(path: str, expected: Any) -> Expectation:
     parts = path.split(".") if path else []
 
@@ -65,15 +71,15 @@ def at(path: str, expected: Any) -> Expectation:
                 current = current[part]
         return current == expected
 
-    return check
+    return described(check, {"op": "at", "path": path, "expected": expected})
 
 
 def equals(expected: Any) -> Expectation:
-    return lambda value: value == expected
+    return described(lambda value: value == expected, {"op": "equals", "expected": expected})
 
 
 def contains(expected: Any) -> Expectation:
-    return lambda value: expected in value
+    return described(lambda value: expected in value, {"op": "contains", "expected": expected})
 
 
 def count_is(path: str, expected: int) -> Expectation:
@@ -85,7 +91,7 @@ def count_is(path: str, expected: int) -> Expectation:
             current = current[int(part)] if isinstance(current, list) else current[part]
         return len(current) == expected
 
-    return check
+    return described(check, {"op": "count", "path": path, "expected": expected})
 
 
 def any_item(path: str, predicate: Callable[[Any], bool]) -> Expectation:
@@ -97,11 +103,12 @@ def any_item(path: str, predicate: Callable[[Any], bool]) -> Expectation:
             current = current[int(part)] if isinstance(current, list) else current[part]
         return any(predicate(item) for item in current)
 
-    return check
+    return described(check, {"op": "any", "path": path, "check": predicate.spec})
 
 
 def all_of(*checks: Expectation) -> Expectation:
-    return lambda value: all(check(value) for check in checks)
+    return described(lambda value: all(check(value) for check in checks),
+                     {"op": "all", "checks": [check.spec for check in checks]})
 
 
 def no_change(_: dict[str, Any]) -> None:
@@ -220,7 +227,7 @@ CASES: list[Case] = [
 
     Case("information", "third party lookup", 'data.information.third_party_by_id("1").name', equals("Third Party A")),
     Case("information", "notice uses consent and lawful dependencies", 'data.information.information("1")', all_of(at("consent_valid", True), at("lawful_processing", True))),
-    Case("information", "unlawful purpose violation appears", 'data.information.information("1").violations', any_item("", lambda x: "Unlawful purpose" in x), set_user1_item(0, purpose="not_registered")),
+    Case("information", "unlawful purpose violation appears", 'data.information.information("1").violations', any_item("", contains("Unlawful purpose")), set_user1_item(0, purpose="not_registered")),
     Case("information", "third party notice required", 'data.information.information("1").third_party_notice.required', equals(True), add_user1_third_party_item()),
     Case("information", "third party notice not required", 'data.information.information("1").third_party_notice.required', equals(False)),
 
@@ -241,10 +248,10 @@ CASES: list[Case] = [
 
     Case("rectification", "valid self request", "data.rectification.valid_request", equals(True)),
     Case("rectification", "invalid delegated request", "data.rectification.valid_request", equals(None), set_request("rectification", target_user_id="2")),
-    Case("rectification", "present data includes email", 'data.rectification.present_data("1")', any_item("", lambda x: x["field"] == "email")),
-    Case("rectification", "accepts editable update", 'data.rectification.accepted_updates("1")', any_item("", lambda x: x["field"] == "email")),
-    Case("rectification", "rejects missing update field", 'data.rectification.rejected_updates("1")', any_item("", lambda x: x["field"] == "uknown_field")),
-    Case("rectification", "rejects third party update", 'data.rectification.rejected_updates("1")', any_item("", lambda x: x["field"] == "profile_score"), chain(add_user1_third_party_item(), set_request("rectification", updates={"profile_score": "77"}))),
+    Case("rectification", "present data includes email", 'data.rectification.present_data("1")', any_item("", at("field", "email"))),
+    Case("rectification", "accepts editable update", 'data.rectification.accepted_updates("1")', any_item("", at("field", "email"))),
+    Case("rectification", "rejects missing update field", 'data.rectification.rejected_updates("1")', any_item("", at("field", "uknown_field"))),
+    Case("rectification", "rejects third party update", 'data.rectification.rejected_updates("1")', any_item("", at("field", "profile_score")), chain(add_user1_third_party_item(), set_request("rectification", updates={"profile_score": "77"}))),
     Case("rectification", "response accepted", 'data.rectification.rectification_response("1").request.validated', equals(True)),
     Case("rectification", "response rejected", 'data.rectification.rectification_response("1").request.validated', equals(False), set_request("rectification", target_user_id="2")),
 
@@ -256,7 +263,7 @@ CASES: list[Case] = [
     Case("erasure", "missing request id reason", "data.erasure.justification", contains("Missing erasure.request_id"), set_request("erasure", request_id="")),
     Case("erasure", "empty fields reason", "data.erasure.justification", contains("No fields requested for erasure"), set_request("erasure", fields=[])),
     Case("erasure", "unknown target user lookup is undefined", "data.erasure.target_user", equals(None), set_request("erasure", target_user_id="404")),
-    Case("erasure", "reject unsupported reason", "data.erasure.justification", any_item("", lambda x: "unsupported erasure reason" in x), chain(set_exception("legal_obligation", []), set_request("erasure", reason="unsupported"))),
+    Case("erasure", "reject unsupported reason", "data.erasure.justification", any_item("", contains("unsupported erasure reason")), chain(set_exception("legal_obligation", []), set_request("erasure", reason="unsupported"))),
     Case("erasure", "reject necessary processing", "data.erasure.justification", contains("Rejected: processing is necessary for the requested data."), chain(set_exception("legal_obligation", []), set_request("erasure", reason="objection_processing", fields=["email"]))),
     Case("erasure", "accept unnecessary objection processing", "data.erasure.decision", equals("accept"), chain(set_exception("legal_obligation", []), set_request("erasure", reason="objection_processing", fields=["age"]))),
     Case("erasure", "reject valid purpose update", "data.erasure.justification", contains("Rejected: data is mapped to a still-valid purpose."), chain(set_exception("legal_obligation", []), set_request("erasure", reason="purpose_updated", fields=["age"]))),
@@ -278,7 +285,7 @@ CASES: list[Case] = [
     Case("restriction", "accept article 21 objection", "data.restriction.decision", equals("accept"), set_request("restriction", reason="objection_art21", checks={"data_correct": True, "purpose_valid": True, "legitimate_interest_overrides": False})),
     Case("restriction", "reject article 21 override", "data.restriction.justification", contains("Rejected: controller's legitimate interests override the objection."), set_request("restriction", reason="objection_art21", checks={"data_correct": True, "purpose_valid": True, "legitimate_interest_overrides": True})),
     Case("restriction", "accept unlawfulness", "data.restriction.decision", equals("accept"), set_request("restriction", reason="unlawfulness")),
-    Case("restriction", "reject unsupported reason", "data.restriction.justification", any_item("", lambda x: "unsupported restriction reason" in x), set_request("restriction", reason="unsupported")),
+    Case("restriction", "reject unsupported reason", "data.restriction.justification", any_item("", contains("unsupported restriction reason")), set_request("restriction", reason="unsupported")),
     Case("restriction", "reject unauthorized request", "data.restriction.decision", equals("reject"), set_request("restriction", target_user_id="2")),
 
     Case("portability", "valid portability request", "data.portability.valid_request", equals(True)),
@@ -313,7 +320,7 @@ CASES: list[Case] = [
     Case("objection", "reject necessary legitimate interest", "data.objection.justification", contains("Rejected: processing is necessary and overrides the objection (legitimate interest assessment).")),
     Case("objection", "accept unnecessary public interest", "data.objection.decision", equals("accept"), set_request("objection", reason="public_interest", checks={"processing_is_necessary": False})),
     Case("objection", "reject necessary public interest", "data.objection.justification", contains("Rejected: processing is necessary and overrides the objection (public interest assessment)."), set_request("objection", reason="public_interest", checks={"processing_is_necessary": True})),
-    Case("objection", "reject unsupported reason", "data.objection.justification", any_item("", lambda x: "unsupported objection reason" in x), set_request("objection", reason="unsupported")),
+    Case("objection", "reject unsupported reason", "data.objection.justification", any_item("", contains("unsupported objection reason")), set_request("objection", reason="unsupported")),
     Case("objection", "reject unauthorized request", "data.objection.decision", equals("reject"), set_request("objection", target_user_id="2")),
     Case("objection", "rejected action includes complaint info", "data.objection.actions.notify_user.complaint.message", equals("If you disagree with this outcome, you can lodge a complaint with your Data Protection Authority (DPA).")),
     Case("objection", "legal basis contract mapping", 'data.objection.legal_basis_for_purpose("contract")', equals("contract")),
@@ -843,7 +850,46 @@ def print_line_coverage(results: list[CaseResult]) -> None:
         print(f"Total touched lines: {total_covered}/{total_lines} ({total_covered / total_lines * 100:.1f}%)")
 
 
+def input_patches(before: Any, after: Any, path: list[str] | None = None) -> list[dict[str, Any]]:
+    """Encode existing Python mutations for the native JS and PHP runners."""
+    path = path or []
+    if isinstance(before, dict) and isinstance(after, dict):
+        patches = []
+        for key in before.keys() - after.keys():
+            patches.append({"path": path + [key], "remove": True})
+        for key, value in after.items():
+            if key not in before:
+                patches.append({"path": path + [key], "value": value})
+            else:
+                patches.extend(input_patches(before[key], value, path + [key]))
+        return patches
+    return [] if before == after else [{"path": path, "value": after}]
+
+
+def export_scenarios() -> None:
+    """Export assertions, not observed OPA answers; no OPA process is needed."""
+    base_input = load_base_input()
+    cases = []
+    for case in CASES:
+        data = copy.deepcopy(base_input)
+        if case.mutate is not None:
+            case.mutate(data)
+        cases.append({"article": case.article, "name": case.name, "expr": case.expr,
+                      "patches": input_patches(base_input, data), "expect": case.expect.spec})
+    payload = {"base_input": base_input, "cases": cases,
+               "coverage": [asdict(item) for item in EXPECTED_COVERAGE]}
+    SCENARIOS.parent.mkdir(parents=True, exist_ok=True)
+    SCENARIOS.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    print(f"Exported {len(cases)} original scenarios to {SCENARIOS}")
+
+
 def main() -> int:
+    if sys.argv[1:] == ["--export"]:
+        export_scenarios()
+        return 0
+    if sys.argv[1:]:
+        print("Usage: python tests/python/run_rego_tests.py [--export]", file=sys.stderr)
+        return 2
     base_input = load_base_input()
     fixtures = materialize_input_fixtures(base_input)
     failures: list[str] = []

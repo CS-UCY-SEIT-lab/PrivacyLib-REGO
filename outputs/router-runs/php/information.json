@@ -1,0 +1,45 @@
+{
+  "consent_valid": true,
+  "controller_identity": {
+    "address": "123 Privacy St, Data City, PC1 2AB",
+    "email": "controller@email.com",
+    "name": "PrivacyLib Inc."
+  },
+  "lawful_processing": true,
+  "my_data_details": [
+    {
+      "field": "email",
+      "purpose": "contract",
+      "purpose_presented": true
+    },
+    {
+      "field": "age",
+      "purpose": "marketing",
+      "purpose_presented": true
+    }
+  ],
+  "show_dpo_identity": {
+    "email": "dpo@email.com",
+    "name": "Data Protection Officer Joe Bloggs"
+  },
+  "storage": {
+    "criteria": "standard retention policy",
+    "period": "2 years"
+  },
+  "third_party_notice": {
+    "data": [],
+    "required": false
+  },
+  "user_id": "1",
+  "user_rights": [
+    "access",
+    "rectification",
+    "erasure",
+    "restriction",
+    "objection",
+    "data_portability",
+    "consent_withdrawal"
+  ],
+  "violations": [],
+  "withdraw_consent": true
+}

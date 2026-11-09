@@ -1,0 +1,4033 @@
+{
+  "base_input": {
+    "breach": {
+      "detected": true,
+      "incident_id": "INC-2026-001",
+      "hours_since_detected": 0.5,
+      "summary": "Unauthorized access to a customer database.",
+      "categories": [
+        "email"
+      ],
+      "risks": [
+        "identity_theft",
+        "rights_freedoms"
+      ],
+      "mitigations": "We revoked compromised credentials and rotated secrets.",
+      "user_actions": "Be alert for phishing emails and consider changing passwords.",
+      "affected_users": [
+        "2",
+        "1"
+      ]
+    },
+    "request": {
+      "access": {
+        "user_id": "1"
+      },
+      "rectification": {
+        "user_id": "1",
+        "target_user_id": "1",
+        "updates": {
+          "email": "new@email.com",
+          "age": "22",
+          "uknown_field": "kserogo"
+        },
+        "request_id": "req-123"
+      },
+      "erasure": {
+        "user_id": "1",
+        "target_user_id": "1",
+        "request_id": "erase-001",
+        "reason": "withdrawn_consent",
+        "fields": [
+          "email",
+          "age"
+        ]
+      },
+      "restriction": {
+        "user_id": "1",
+        "target_user_id": "1",
+        "request_id": "restrict-001",
+        "reason": "data_inaccuracy_suspicion",
+        "fields": [
+          "email",
+          "age"
+        ],
+        "checks": {
+          "data_correct": false,
+          "purpose_valid": true,
+          "legitimate_interest_overrides": true
+        }
+      },
+      "portability": {
+        "user_id": "1",
+        "target_user_id": "1",
+        "request_id": "port-001",
+        "transfer_requested": true,
+        "transfer_service_id": "svcA"
+      },
+      "objection": {
+        "user_id": "1",
+        "target_user_id": "1",
+        "request_id": "obj-002",
+        "reason": "legitimate_interest",
+        "fields": [
+          "email",
+          "age"
+        ],
+        "checks": {
+          "processing_is_necessary": true
+        }
+      },
+      "complaint": {
+        "user_id": "1",
+        "request_id": "cmp-001",
+        "authority_id": "cy-0000",
+        "description": "I believe my data was used for marketing without my consent."
+      }
+    },
+    "services": [
+      {
+        "id": "svcA",
+        "name": "Example Service A",
+        "supports_portability": true,
+        "supported_formats": [
+          "json",
+          "csv"
+        ]
+      }
+    ],
+    "exceptions": {
+      "legal_obligation": [
+        "email"
+      ],
+      "public_interest": [],
+      "legal_claims": []
+    },
+    "storage": {
+      "period": "2 years",
+      "criteria": "standard retention policy"
+    },
+    "dpo": {
+      "name": "Data Protection Officer Joe Bloggs",
+      "email": "dpo@email.com"
+    },
+    "controller": {
+      "name": "PrivacyLib Inc.",
+      "address": "123 Privacy St, Data City, PC1 2AB",
+      "email": "controller@email.com"
+    },
+    "consents": {
+      "1": {
+        "value": "yes",
+        "withdrawn": false
+      },
+      "2": {
+        "value": "yes",
+        "withdrawn": false
+      },
+      "3": {
+        "value": "yes",
+        "withdrawn": true
+      }
+    },
+    "lawful_purposes": [
+      "contract",
+      "legal_obligation",
+      "marketing"
+    ],
+    "third_parties": [
+      {
+        "id": "1",
+        "name": "Third Party A",
+        "legitimate_interest": [
+          "trial",
+          "kati"
+        ]
+      }
+    ],
+    "users": [
+      {
+        "id": "1",
+        "data_items": [
+          {
+            "field": "email",
+            "value": "email@email.com",
+            "purpose": "contract",
+            "source": "user",
+            "purpose_presented": true
+          },
+          {
+            "field": "age",
+            "value": "21",
+            "purpose": "marketing",
+            "source": "user",
+            "purpose_presented": true
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "data_items": [
+          {
+            "field": "email",
+            "purpose": "katiallo",
+            "source": "1",
+            "purpose_presented": true
+          }
+        ]
+      }
+    ],
+    "supervisory_authorities": [
+      {
+        "id": "cy-0000",
+        "name": "Office of the Commissioner for Personal Data Protection (Cyprus)",
+        "country": "Cyprus",
+        "channel": "email",
+        "endpoint": "complaints@dataprotection.gov.cy"
+      },
+      {
+        "id": "ie-dpc",
+        "name": "Data Protection Commission (Ireland)",
+        "country": "Ireland",
+        "channel": "webform",
+        "endpoint": "https://forms.dataprotection.ie/contact"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "article": "consent",
+      "name": "consent record exists",
+      "expr": "data.consent.consent_record(\"1\").value",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "yes"
+      }
+    },
+    {
+      "article": "consent",
+      "name": "given consent is true",
+      "expr": "data.consent.has_given_consent(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "consent",
+      "name": "missing consent is undefined",
+      "expr": "data.consent.has_given_consent(\"404\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "consent",
+      "name": "withdrawn consent is true",
+      "expr": "data.consent.consent_withdrawn(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "consents",
+            "1",
+            "withdrawn"
+          ],
+          "value": true
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "consent",
+      "name": "may process accepted",
+      "expr": "data.consent.may_process_or_store(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "consent",
+      "name": "may process rejects no consent",
+      "expr": "data.consent.may_process_or_store(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "consents",
+            "1",
+            "value"
+          ],
+          "value": "no"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": false
+      }
+    },
+    {
+      "article": "consent",
+      "name": "may process rejects withdrawn",
+      "expr": "data.consent.may_process_or_store(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "consents",
+            "1",
+            "withdrawn"
+          ],
+          "value": true
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": false
+      }
+    },
+    {
+      "article": "consent",
+      "name": "withdrawal confirmation completed",
+      "expr": "data.consent.withdrawal_confirmation(\"1\").status",
+      "patches": [
+        {
+          "path": [
+            "consents",
+            "1",
+            "withdrawn"
+          ],
+          "value": true
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "completed"
+      }
+    },
+    {
+      "article": "consent",
+      "name": "actions expose withdrawal status",
+      "expr": "data.consent.actions(\"1\").confirm_withdrawal_completion.status",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "not_withdrawn"
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "consent dependency accepted",
+      "expr": "data.lawful.consent_ok(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "consent dependency rejected",
+      "expr": "data.lawful.consent_ok(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "consents",
+            "1",
+            "withdrawn"
+          ],
+          "value": true
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "lawful purpose known",
+      "expr": "data.lawful.lawful_purpose(\"contract\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "lawful purpose unknown",
+      "expr": "data.lawful.lawful_purpose(\"not_registered\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "purpose presented",
+      "expr": "data.lawful.purpose_presented(input.users[0].data_items[0])",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "purpose not presented",
+      "expr": "data.lawful.purpose_presented(input.users[0].data_items[0])",
+      "patches": [
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "contract",
+                  "source": "user",
+                  "purpose_presented": false
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "data from user",
+      "expr": "data.lawful.data_from_user(input.users[0].data_items[0])",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "third party data not direct",
+      "expr": "data.lawful.data_from_user(input.users[1].data_items[0])",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "data item lawful",
+      "expr": "data.lawful.data_item_lawful(input.users[0].data_items[0])",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "unlawful data detected",
+      "expr": "data.lawful.exists_unlawful_data(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "not_registered",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "lawful processing accepted",
+      "expr": "data.lawful.lawful_processing(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "lawful processing rejects withdrawn consent",
+      "expr": "data.lawful.lawful_processing(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "consents",
+            "1",
+            "withdrawn"
+          ],
+          "value": true
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": false
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "lawful processing rejects hidden purpose",
+      "expr": "data.lawful.lawful_processing(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "contract",
+                  "source": "user",
+                  "purpose_presented": false
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": false
+      }
+    },
+    {
+      "article": "lawful",
+      "name": "audit logs decision",
+      "expr": "data.lawful.actions(\"1\").log_audit.lawful_processing",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "information",
+      "name": "third party lookup",
+      "expr": "data.information.third_party_by_id(\"1\").name",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "Third Party A"
+      }
+    },
+    {
+      "article": "information",
+      "name": "notice uses consent and lawful dependencies",
+      "expr": "data.information.information(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "all",
+        "checks": [
+          {
+            "op": "at",
+            "path": "consent_valid",
+            "expected": true
+          },
+          {
+            "op": "at",
+            "path": "lawful_processing",
+            "expected": true
+          }
+        ]
+      }
+    },
+    {
+      "article": "information",
+      "name": "unlawful purpose violation appears",
+      "expr": "data.information.information(\"1\").violations",
+      "patches": [
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "not_registered",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "any",
+        "path": "",
+        "check": {
+          "op": "contains",
+          "expected": "Unlawful purpose"
+        }
+      }
+    },
+    {
+      "article": "information",
+      "name": "third party notice required",
+      "expr": "data.information.information(\"1\").third_party_notice.required",
+      "patches": [
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "contract",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "profile_score",
+                  "value": "42",
+                  "purpose": "marketing",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "information",
+      "name": "third party notice not required",
+      "expr": "data.information.information(\"1\").third_party_notice.required",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": false
+      }
+    },
+    {
+      "article": "access",
+      "name": "valid access request",
+      "expr": "data.access.valid_request(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "access",
+      "name": "invalid access request",
+      "expr": "data.access.valid_request(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "access",
+            "user_id"
+          ],
+          "value": "2"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "access",
+      "name": "first party item count",
+      "expr": "data.access.first_party_items(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "count",
+        "path": "",
+        "expected": 2
+      }
+    },
+    {
+      "article": "access",
+      "name": "third party item count",
+      "expr": "data.access.third_party_items(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "contract",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "profile_score",
+                  "value": "42",
+                  "purpose": "marketing",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "count",
+        "path": "",
+        "expected": 1
+      }
+    },
+    {
+      "article": "access",
+      "name": "unknown user lookup is undefined",
+      "expr": "data.access.user_obj(\"404\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "access",
+      "name": "format first party item helper",
+      "expr": "data.access.format_item(input.users[0].data_items[0]).field",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "email"
+      }
+    },
+    {
+      "article": "access",
+      "name": "format third party item helper",
+      "expr": "data.access.format_tp_item(input.users[0].data_items[2]).third_party_name",
+      "patches": [
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "contract",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "profile_score",
+                  "value": "42",
+                  "purpose": "marketing",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "Third Party A"
+      }
+    },
+    {
+      "article": "access",
+      "name": "download payload includes controller",
+      "expr": "data.access.download_payload(\"1\").controller.name",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "PrivacyLib Inc."
+      }
+    },
+    {
+      "article": "access",
+      "name": "download object filename",
+      "expr": "data.access.download_object(\"1\").filename",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "access_1.json"
+      }
+    },
+    {
+      "article": "access",
+      "name": "audit record valid request true",
+      "expr": "data.access.audit_record(\"1\").validated",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "access",
+      "name": "audit record valid request false",
+      "expr": "data.access.audit_record(\"1\").validated",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "access",
+            "user_id"
+          ],
+          "value": "2"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": false
+      }
+    },
+    {
+      "article": "access",
+      "name": "access response accepted",
+      "expr": "data.access.access_response(\"1\").request.validated",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "access",
+      "name": "access response rejected",
+      "expr": "data.access.access_response(\"1\").request.validated",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "access",
+            "user_id"
+          ],
+          "value": "2"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": false
+      }
+    },
+    {
+      "article": "access",
+      "name": "third party notifications generated",
+      "expr": "data.access.third_party_access_notifications(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "contract",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "profile_score",
+                  "value": "42",
+                  "purpose": "marketing",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "count",
+        "path": "",
+        "expected": 1
+      }
+    },
+    {
+      "article": "rectification",
+      "name": "valid self request",
+      "expr": "data.rectification.valid_request",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "rectification",
+      "name": "invalid delegated request",
+      "expr": "data.rectification.valid_request",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "rectification",
+            "target_user_id"
+          ],
+          "value": "2"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "rectification",
+      "name": "present data includes email",
+      "expr": "data.rectification.present_data(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "any",
+        "path": "",
+        "check": {
+          "op": "at",
+          "path": "field",
+          "expected": "email"
+        }
+      }
+    },
+    {
+      "article": "rectification",
+      "name": "accepts editable update",
+      "expr": "data.rectification.accepted_updates(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "any",
+        "path": "",
+        "check": {
+          "op": "at",
+          "path": "field",
+          "expected": "email"
+        }
+      }
+    },
+    {
+      "article": "rectification",
+      "name": "rejects missing update field",
+      "expr": "data.rectification.rejected_updates(\"1\")",
+      "patches": [],
+      "expect": {
+        "op": "any",
+        "path": "",
+        "check": {
+          "op": "at",
+          "path": "field",
+          "expected": "uknown_field"
+        }
+      }
+    },
+    {
+      "article": "rectification",
+      "name": "rejects third party update",
+      "expr": "data.rectification.rejected_updates(\"1\")",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "rectification",
+            "updates",
+            "uknown_field"
+          ],
+          "remove": true
+        },
+        {
+          "path": [
+            "request",
+            "rectification",
+            "updates",
+            "age"
+          ],
+          "remove": true
+        },
+        {
+          "path": [
+            "request",
+            "rectification",
+            "updates",
+            "email"
+          ],
+          "remove": true
+        },
+        {
+          "path": [
+            "request",
+            "rectification",
+            "updates",
+            "profile_score"
+          ],
+          "value": "77"
+        },
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "contract",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "profile_score",
+                  "value": "42",
+                  "purpose": "marketing",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "any",
+        "path": "",
+        "check": {
+          "op": "at",
+          "path": "field",
+          "expected": "profile_score"
+        }
+      }
+    },
+    {
+      "article": "rectification",
+      "name": "response accepted",
+      "expr": "data.rectification.rectification_response(\"1\").request.validated",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "rectification",
+      "name": "response rejected",
+      "expr": "data.rectification.rectification_response(\"1\").request.validated",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "rectification",
+            "target_user_id"
+          ],
+          "value": "2"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": false
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "accept withdrawn consent erasure",
+      "expr": "data.erasure.decision",
+      "patches": [
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "accept unlawfully processed erasure",
+      "expr": "data.erasure.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "reason"
+          ],
+          "value": "unlawfully_processed"
+        },
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "reject unauthorized erasure",
+      "expr": "data.erasure.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "target_user_id"
+          ],
+          "value": "2"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "reject"
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "missing user id reason",
+      "expr": "data.erasure.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "user_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing erasure.user_id"
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "missing target user id reason",
+      "expr": "data.erasure.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "target_user_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing erasure.target_user_id"
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "missing request id reason",
+      "expr": "data.erasure.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "request_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing erasure.request_id"
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "empty fields reason",
+      "expr": "data.erasure.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "fields"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "No fields requested for erasure"
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "unknown target user lookup is undefined",
+      "expr": "data.erasure.target_user",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "target_user_id"
+          ],
+          "value": "404"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "reject unsupported reason",
+      "expr": "data.erasure.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "reason"
+          ],
+          "value": "unsupported"
+        },
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "any",
+        "path": "",
+        "check": {
+          "op": "contains",
+          "expected": "unsupported erasure reason"
+        }
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "reject necessary processing",
+      "expr": "data.erasure.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "reason"
+          ],
+          "value": "objection_processing"
+        },
+        {
+          "path": [
+            "request",
+            "erasure",
+            "fields"
+          ],
+          "value": [
+            "email"
+          ]
+        },
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: processing is necessary for the requested data."
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "accept unnecessary objection processing",
+      "expr": "data.erasure.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "reason"
+          ],
+          "value": "objection_processing"
+        },
+        {
+          "path": [
+            "request",
+            "erasure",
+            "fields"
+          ],
+          "value": [
+            "age"
+          ]
+        },
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "reject valid purpose update",
+      "expr": "data.erasure.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "reason"
+          ],
+          "value": "purpose_updated"
+        },
+        {
+          "path": [
+            "request",
+            "erasure",
+            "fields"
+          ],
+          "value": [
+            "age"
+          ]
+        },
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: data is mapped to a still-valid purpose."
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "accept invalid purpose update",
+      "expr": "data.erasure.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "erasure",
+            "reason"
+          ],
+          "value": "purpose_updated"
+        },
+        {
+          "path": [
+            "request",
+            "erasure",
+            "fields"
+          ],
+          "value": [
+            "email"
+          ]
+        },
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "lawful_purposes"
+          ],
+          "value": [
+            "legal_obligation",
+            "marketing"
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "legal obligation blocks deletion",
+      "expr": "data.erasure.justification",
+      "patches": [],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: retention required by legal obligation."
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "public interest blocks deletion",
+      "expr": "data.erasure.justification",
+      "patches": [
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "exceptions",
+            "public_interest"
+          ],
+          "value": [
+            "age"
+          ]
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: retention required for public interest."
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "legal claims block deletion",
+      "expr": "data.erasure.justification",
+      "patches": [
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "exceptions",
+            "legal_claims"
+          ],
+          "value": [
+            "age"
+          ]
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: retention needed to defend legal claims."
+      }
+    },
+    {
+      "article": "erasure",
+      "name": "delete plan on accept",
+      "expr": "data.erasure.actions.delete.fields",
+      "patches": [
+        {
+          "path": [
+            "exceptions",
+            "legal_obligation"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": [
+          "email",
+          "age"
+        ]
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "accept inaccuracy suspicion",
+      "expr": "data.restriction.decision",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "missing user id reason",
+      "expr": "data.restriction.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "user_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing restriction.user_id"
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "missing target user id reason",
+      "expr": "data.restriction.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "target_user_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing restriction.target_user_id"
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "missing request id reason",
+      "expr": "data.restriction.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "request_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing restriction.request_id"
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "empty fields reason",
+      "expr": "data.restriction.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "fields"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "No fields requested for restriction"
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "unknown target user lookup is undefined",
+      "expr": "data.restriction.target_user",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "target_user_id"
+          ],
+          "value": "404"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "reject corrected data",
+      "expr": "data.restriction.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "checks",
+            "data_correct"
+          ],
+          "value": true
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: data was verified as correct."
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "accept invalid purpose",
+      "expr": "data.restriction.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "reason"
+          ],
+          "value": "invalid_purpose"
+        },
+        {
+          "path": [
+            "request",
+            "restriction",
+            "checks",
+            "data_correct"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "request",
+            "restriction",
+            "checks",
+            "purpose_valid"
+          ],
+          "value": false
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "reject valid purpose",
+      "expr": "data.restriction.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "reason"
+          ],
+          "value": "invalid_purpose"
+        },
+        {
+          "path": [
+            "request",
+            "restriction",
+            "checks",
+            "data_correct"
+          ],
+          "value": true
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: purpose is still valid."
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "accept article 21 objection",
+      "expr": "data.restriction.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "reason"
+          ],
+          "value": "objection_art21"
+        },
+        {
+          "path": [
+            "request",
+            "restriction",
+            "checks",
+            "data_correct"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "request",
+            "restriction",
+            "checks",
+            "legitimate_interest_overrides"
+          ],
+          "value": false
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "reject article 21 override",
+      "expr": "data.restriction.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "reason"
+          ],
+          "value": "objection_art21"
+        },
+        {
+          "path": [
+            "request",
+            "restriction",
+            "checks",
+            "data_correct"
+          ],
+          "value": true
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: controller's legitimate interests override the objection."
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "accept unlawfulness",
+      "expr": "data.restriction.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "reason"
+          ],
+          "value": "unlawfulness"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "reject unsupported reason",
+      "expr": "data.restriction.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "reason"
+          ],
+          "value": "unsupported"
+        }
+      ],
+      "expect": {
+        "op": "any",
+        "path": "",
+        "check": {
+          "op": "contains",
+          "expected": "unsupported restriction reason"
+        }
+      }
+    },
+    {
+      "article": "restriction",
+      "name": "reject unauthorized request",
+      "expr": "data.restriction.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "restriction",
+            "target_user_id"
+          ],
+          "value": "2"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "reject"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "valid portability request",
+      "expr": "data.portability.valid_request",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "portability",
+      "name": "missing user id reason",
+      "expr": "data.portability.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "portability",
+            "user_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing portability.user_id"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "missing target user id reason",
+      "expr": "data.portability.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "portability",
+            "target_user_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing portability.target_user_id"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "missing request id reason",
+      "expr": "data.portability.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "portability",
+            "request_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing portability.request_id"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "unknown target user fallback data",
+      "expr": "data.portability.personal_data.data_items",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "portability",
+            "target_user_id"
+          ],
+          "value": "404"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": []
+      }
+    },
+    {
+      "article": "portability",
+      "name": "consent dependency accepted",
+      "expr": "data.portability.consent_valid",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "portability",
+      "name": "lawful dependency accepted",
+      "expr": "data.portability.lawful_processing_valid",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "portability",
+      "name": "reject withdrawn consent",
+      "expr": "data.portability.justification",
+      "patches": [
+        {
+          "path": [
+            "consents",
+            "1",
+            "withdrawn"
+          ],
+          "value": true
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: consent is missing, invalid, or withdrawn."
+      }
+    },
+    {
+      "article": "portability",
+      "name": "reject unlawful processing",
+      "expr": "data.portability.justification",
+      "patches": [
+        {
+          "path": [
+            "users"
+          ],
+          "value": [
+            {
+              "id": "1",
+              "data_items": [
+                {
+                  "field": "email",
+                  "value": "email@email.com",
+                  "purpose": "not_registered",
+                  "source": "user",
+                  "purpose_presented": true
+                },
+                {
+                  "field": "age",
+                  "value": "21",
+                  "purpose": "marketing",
+                  "source": "user",
+                  "purpose_presented": true
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "data_items": [
+                {
+                  "field": "email",
+                  "purpose": "katiallo",
+                  "source": "1",
+                  "purpose_presented": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: processing does not have a valid lawful basis."
+      }
+    },
+    {
+      "article": "portability",
+      "name": "accept export",
+      "expr": "data.portability.decision",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "compatible transfer starts",
+      "expr": "data.portability.transfer_status",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "started"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "incompatible transfer not started",
+      "expr": "data.portability.transfer_status",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "portability",
+            "transfer_service_id"
+          ],
+          "value": "missing"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "not_started"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "transfer not requested has empty transfer block",
+      "expr": "data.portability.transfer_actions_block",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "portability",
+            "transfer_requested"
+          ],
+          "value": false
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": {}
+      }
+    },
+    {
+      "article": "portability",
+      "name": "transfer warning kept with accepted export",
+      "expr": "data.portability.actions.notify_user.transfer_issue",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "portability",
+            "transfer_service_id"
+          ],
+          "value": "missing"
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Transfer requested but target service is not compatible or not supported."
+      }
+    },
+    {
+      "article": "portability",
+      "name": "reject unauthorized request",
+      "expr": "data.portability.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "portability",
+            "target_user_id"
+          ],
+          "value": "2"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "reject"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "legal basis contract mapping",
+      "expr": "data.portability.legal_basis_for_purpose(\"contract\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "contract"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "legal basis legal obligation mapping",
+      "expr": "data.portability.legal_basis_for_purpose(\"legal_obligation\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "legal_obligation"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "legal basis legitimate interest mapping",
+      "expr": "data.portability.legal_basis_for_purpose(\"legitimate_interest\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "legitimate_interest"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "legal basis public interest mapping",
+      "expr": "data.portability.legal_basis_for_purpose(\"public_interest\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "public_interest"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "legal basis marketing consent mapping",
+      "expr": "data.portability.legal_basis_for_purpose(\"marketing\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "consent"
+      }
+    },
+    {
+      "article": "portability",
+      "name": "legal basis unknown mapping",
+      "expr": "data.portability.legal_basis_for_purpose(\"not_registered\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "unknown"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "accept marketing objection",
+      "expr": "data.objection.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "reason"
+          ],
+          "value": "marketing"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "missing user id reason",
+      "expr": "data.objection.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "user_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing objection.user_id"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "missing target user id reason",
+      "expr": "data.objection.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "target_user_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing objection.target_user_id"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "missing request id reason",
+      "expr": "data.objection.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "request_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing objection.request_id"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "empty fields reason",
+      "expr": "data.objection.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "fields"
+          ],
+          "value": []
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "No fields requested for objection"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "unknown target user lookup is undefined",
+      "expr": "data.objection.target_user",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "target_user_id"
+          ],
+          "value": "404"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": null
+      }
+    },
+    {
+      "article": "objection",
+      "name": "accept unnecessary legitimate interest",
+      "expr": "data.objection.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "checks",
+            "processing_is_necessary"
+          ],
+          "value": false
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "reject necessary legitimate interest",
+      "expr": "data.objection.justification",
+      "patches": [],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: processing is necessary and overrides the objection (legitimate interest assessment)."
+      }
+    },
+    {
+      "article": "objection",
+      "name": "accept unnecessary public interest",
+      "expr": "data.objection.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "reason"
+          ],
+          "value": "public_interest"
+        },
+        {
+          "path": [
+            "request",
+            "objection",
+            "checks",
+            "processing_is_necessary"
+          ],
+          "value": false
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "reject necessary public interest",
+      "expr": "data.objection.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "reason"
+          ],
+          "value": "public_interest"
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Rejected: processing is necessary and overrides the objection (public interest assessment)."
+      }
+    },
+    {
+      "article": "objection",
+      "name": "reject unsupported reason",
+      "expr": "data.objection.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "reason"
+          ],
+          "value": "unsupported"
+        }
+      ],
+      "expect": {
+        "op": "any",
+        "path": "",
+        "check": {
+          "op": "contains",
+          "expected": "unsupported objection reason"
+        }
+      }
+    },
+    {
+      "article": "objection",
+      "name": "reject unauthorized request",
+      "expr": "data.objection.decision",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "objection",
+            "target_user_id"
+          ],
+          "value": "2"
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": "reject"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "rejected action includes complaint info",
+      "expr": "data.objection.actions.notify_user.complaint.message",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "If you disagree with this outcome, you can lodge a complaint with your Data Protection Authority (DPA)."
+      }
+    },
+    {
+      "article": "objection",
+      "name": "legal basis contract mapping",
+      "expr": "data.objection.legal_basis_for_purpose(\"contract\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "contract"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "legal basis legal obligation mapping",
+      "expr": "data.objection.legal_basis_for_purpose(\"legal_obligation\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "legal_obligation"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "legal basis legitimate interest mapping",
+      "expr": "data.objection.legal_basis_for_purpose(\"legitimate_interest\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "legitimate_interest"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "legal basis public interest mapping",
+      "expr": "data.objection.legal_basis_for_purpose(\"public_interest\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "public_interest"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "legal basis marketing consent mapping",
+      "expr": "data.objection.legal_basis_for_purpose(\"marketing\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "consent"
+      }
+    },
+    {
+      "article": "objection",
+      "name": "legal basis unknown mapping",
+      "expr": "data.objection.legal_basis_for_purpose(\"not_registered\")",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "unknown"
+      }
+    },
+    {
+      "article": "complaint",
+      "name": "accept valid complaint",
+      "expr": "data.complaint.decision",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "accept"
+      }
+    },
+    {
+      "article": "complaint",
+      "name": "reject missing user id",
+      "expr": "data.complaint.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "complaint",
+            "user_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing complaint.user_id"
+      }
+    },
+    {
+      "article": "complaint",
+      "name": "reject unknown user",
+      "expr": "data.complaint.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "complaint",
+            "user_id"
+          ],
+          "value": "404"
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Unknown user_id"
+      }
+    },
+    {
+      "article": "complaint",
+      "name": "reject missing description",
+      "expr": "data.complaint.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "complaint",
+            "description"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing complaint.description"
+      }
+    },
+    {
+      "article": "complaint",
+      "name": "reject missing authority",
+      "expr": "data.complaint.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "complaint",
+            "authority_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing complaint.authority_id"
+      }
+    },
+    {
+      "article": "complaint",
+      "name": "reject unknown authority",
+      "expr": "data.complaint.justification",
+      "patches": [
+        {
+          "path": [
+            "request",
+            "complaint",
+            "authority_id"
+          ],
+          "value": "missing"
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Selected supervisory authority not found"
+      }
+    },
+    {
+      "article": "complaint",
+      "name": "forward accepted complaint",
+      "expr": "data.complaint.actions.forward.authority.id",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "cy-0000"
+      }
+    },
+    {
+      "article": "breach",
+      "name": "notify detected high risk within 72 hours",
+      "expr": "data.breach.decision",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": "notify_users"
+      }
+    },
+    {
+      "article": "breach",
+      "name": "high risk rights freedoms category",
+      "expr": "data.breach.high_risk",
+      "patches": [
+        {
+          "path": [
+            "breach",
+            "risks"
+          ],
+          "value": [
+            "rights_freedoms"
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "breach",
+      "name": "high risk identity theft category",
+      "expr": "data.breach.high_risk",
+      "patches": [
+        {
+          "path": [
+            "breach",
+            "risks"
+          ],
+          "value": [
+            "identity_theft"
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "breach",
+      "name": "high risk discrimination category",
+      "expr": "data.breach.high_risk",
+      "patches": [
+        {
+          "path": [
+            "breach",
+            "risks"
+          ],
+          "value": [
+            "discrimination"
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "breach",
+      "name": "high risk financial loss category",
+      "expr": "data.breach.high_risk",
+      "patches": [
+        {
+          "path": [
+            "breach",
+            "risks"
+          ],
+          "value": [
+            "financial_loss"
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "breach",
+      "name": "high risk reputational damage category",
+      "expr": "data.breach.high_risk",
+      "patches": [
+        {
+          "path": [
+            "breach",
+            "risks"
+          ],
+          "value": [
+            "reputational_damage"
+          ]
+        }
+      ],
+      "expect": {
+        "op": "equals",
+        "expected": true
+      }
+    },
+    {
+      "article": "breach",
+      "name": "reject no breach detected",
+      "expr": "data.breach.justification",
+      "patches": [
+        {
+          "path": [
+            "breach",
+            "detected"
+          ],
+          "value": false
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "No breach detected."
+      }
+    },
+    {
+      "article": "breach",
+      "name": "reject missing incident id",
+      "expr": "data.breach.justification",
+      "patches": [
+        {
+          "path": [
+            "breach",
+            "incident_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Missing breach.incident_id"
+      }
+    },
+    {
+      "article": "breach",
+      "name": "reject over 72 hours",
+      "expr": "data.breach.justification",
+      "patches": [
+        {
+          "path": [
+            "breach",
+            "hours_since_detected"
+          ],
+          "value": 73
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Notification window exceeded (more than 72 hours since detection)."
+      }
+    },
+    {
+      "article": "breach",
+      "name": "reject low risk",
+      "expr": "data.breach.justification",
+      "patches": [
+        {
+          "path": [
+            "breach",
+            "risks"
+          ],
+          "value": [
+            "minor"
+          ]
+        }
+      ],
+      "expect": {
+        "op": "contains",
+        "expected": "Risk assessment does not indicate high risk to individuals' rights and freedoms."
+      }
+    },
+    {
+      "article": "breach",
+      "name": "actions notify affected users",
+      "expr": "data.breach.actions.notify_users.users",
+      "patches": [],
+      "expect": {
+        "op": "equals",
+        "expected": [
+          "2",
+          "1"
+        ]
+      }
+    }
+  ],
+  "coverage": [
+    {
+      "article": "consent",
+      "kind": "rule",
+      "label": "consent_record exists and missing",
+      "terms": [
+        "consent record"
+      ]
+    },
+    {
+      "article": "consent",
+      "kind": "rule",
+      "label": "has_given_consent true and undefined",
+      "terms": [
+        "given consent"
+      ]
+    },
+    {
+      "article": "consent",
+      "kind": "rule",
+      "label": "consent_withdrawn true",
+      "terms": [
+        "withdrawn consent"
+      ]
+    },
+    {
+      "article": "consent",
+      "kind": "branch",
+      "label": "may_process_or_store accepts valid consent",
+      "terms": [
+        "may process accepted"
+      ]
+    },
+    {
+      "article": "consent",
+      "kind": "branch",
+      "label": "may_process_or_store rejects missing/no consent",
+      "terms": [
+        "may process rejects no consent"
+      ]
+    },
+    {
+      "article": "consent",
+      "kind": "branch",
+      "label": "may_process_or_store rejects withdrawn consent",
+      "terms": [
+        "may process rejects withdrawn"
+      ]
+    },
+    {
+      "article": "consent",
+      "kind": "branch",
+      "label": "withdrawal confirmation completed",
+      "terms": [
+        "withdrawal confirmation completed"
+      ]
+    },
+    {
+      "article": "consent",
+      "kind": "branch",
+      "label": "withdrawal confirmation not withdrawn",
+      "terms": [
+        "actions expose withdrawal status"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "dependency",
+      "label": "uses consent.may_process_or_store accepted",
+      "terms": [
+        "consent dependency accepted"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "dependency",
+      "label": "uses consent.may_process_or_store rejected",
+      "terms": [
+        "consent dependency rejected"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "rule",
+      "label": "lawful_purpose known",
+      "terms": [
+        "lawful purpose known"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "rule",
+      "label": "lawful_purpose unknown",
+      "terms": [
+        "lawful purpose unknown"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "rule",
+      "label": "purpose_presented true",
+      "terms": [
+        "purpose presented"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "rule",
+      "label": "purpose_presented false/undefined",
+      "terms": [
+        "purpose not presented"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "rule",
+      "label": "data_from_user true",
+      "terms": [
+        "data from user"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "rule",
+      "label": "data_from_user false/undefined",
+      "terms": [
+        "third party data not direct"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "rule",
+      "label": "data_item_lawful true",
+      "terms": [
+        "data item lawful"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "branch",
+      "label": "exists_unlawful_data true",
+      "terms": [
+        "unlawful data detected"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "branch",
+      "label": "lawful_processing accepts",
+      "terms": [
+        "lawful processing accepted"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "branch",
+      "label": "lawful_processing rejects consent failure",
+      "terms": [
+        "lawful processing rejects withdrawn consent"
+      ]
+    },
+    {
+      "article": "lawful",
+      "kind": "branch",
+      "label": "lawful_processing rejects unlawful data",
+      "terms": [
+        "lawful processing rejects hidden purpose"
+      ]
+    },
+    {
+      "article": "information",
+      "kind": "dependency",
+      "label": "uses lawful.lawful_purpose for violations",
+      "terms": [
+        "unlawful purpose violation"
+      ]
+    },
+    {
+      "article": "information",
+      "kind": "dependency",
+      "label": "uses lawful.lawful_processing and consent status",
+      "terms": [
+        "notice uses consent"
+      ]
+    },
+    {
+      "article": "information",
+      "kind": "branch",
+      "label": "third-party notice required",
+      "terms": [
+        "third party notice required"
+      ]
+    },
+    {
+      "article": "information",
+      "kind": "branch",
+      "label": "third-party notice not required",
+      "terms": [
+        "third party notice not required"
+      ]
+    },
+    {
+      "article": "information",
+      "kind": "rule",
+      "label": "controller, DPO, storage and rights notice returned",
+      "terms": [
+        "notice uses consent"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "branch",
+      "label": "valid_request true",
+      "terms": [
+        "valid access request"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "branch",
+      "label": "valid_request false/undefined",
+      "terms": [
+        "invalid access request"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "rule",
+      "label": "first_party_items",
+      "terms": [
+        "first party item count"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "rule",
+      "label": "third_party_items",
+      "terms": [
+        "third party item count"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "edge",
+      "label": "unknown user lookup undefined",
+      "terms": [
+        "unknown user lookup"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "rule",
+      "label": "format_item helper",
+      "terms": [
+        "format first party item"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "rule",
+      "label": "format_tp_item helper",
+      "terms": [
+        "format third party item"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "rule",
+      "label": "download_payload helper",
+      "terms": [
+        "download payload"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "rule",
+      "label": "download_object helper",
+      "terms": [
+        "download object"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "rule",
+      "label": "audit_record true branch",
+      "terms": [
+        "audit record valid request true"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "rule",
+      "label": "audit_record false branch",
+      "terms": [
+        "audit record valid request false"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "branch",
+      "label": "access_response accepted",
+      "terms": [
+        "access response accepted"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "branch",
+      "label": "access_response rejected",
+      "terms": [
+        "access response rejected"
+      ]
+    },
+    {
+      "article": "access",
+      "kind": "rule",
+      "label": "third_party_access_notifications",
+      "terms": [
+        "third party notifications generated"
+      ]
+    },
+    {
+      "article": "rectification",
+      "kind": "branch",
+      "label": "valid_request true",
+      "terms": [
+        "valid self request"
+      ]
+    },
+    {
+      "article": "rectification",
+      "kind": "branch",
+      "label": "valid_request false/undefined",
+      "terms": [
+        "invalid delegated request"
+      ]
+    },
+    {
+      "article": "rectification",
+      "kind": "rule",
+      "label": "present_data",
+      "terms": [
+        "present data"
+      ]
+    },
+    {
+      "article": "rectification",
+      "kind": "branch",
+      "label": "accepted editable update",
+      "terms": [
+        "accepts editable update"
+      ]
+    },
+    {
+      "article": "rectification",
+      "kind": "branch",
+      "label": "rejected missing field update",
+      "terms": [
+        "rejects missing update field"
+      ]
+    },
+    {
+      "article": "rectification",
+      "kind": "branch",
+      "label": "rejected third-party/non-editable update",
+      "terms": [
+        "rejects third party update"
+      ]
+    },
+    {
+      "article": "rectification",
+      "kind": "branch",
+      "label": "rectification_response accepted",
+      "terms": [
+        "response accepted"
+      ]
+    },
+    {
+      "article": "rectification",
+      "kind": "branch",
+      "label": "rectification_response rejected",
+      "terms": [
+        "response rejected"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "decision accept",
+      "terms": [
+        "accept withdrawn consent erasure"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "unlawfully_processed reason accepts",
+      "terms": [
+        "accept unlawfully processed"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "reject unauthorized request",
+      "terms": [
+        "reject unauthorized"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "edge",
+      "label": "missing user_id validation",
+      "terms": [
+        "missing user id"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "edge",
+      "label": "missing target_user_id validation",
+      "terms": [
+        "missing target user id"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "edge",
+      "label": "missing request_id validation",
+      "terms": [
+        "missing request id"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "edge",
+      "label": "empty fields validation",
+      "terms": [
+        "empty fields"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "edge",
+      "label": "unknown target user lookup",
+      "terms": [
+        "unknown target user lookup"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "reject unsupported reason",
+      "terms": [
+        "reject unsupported reason"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "reject necessary objection processing",
+      "terms": [
+        "reject necessary processing"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "accept unnecessary objection processing",
+      "terms": [
+        "accept unnecessary objection processing"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "reject valid purpose update",
+      "terms": [
+        "reject valid purpose update"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "accept invalid purpose update",
+      "terms": [
+        "accept invalid purpose update"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "legal obligation exception",
+      "terms": [
+        "legal obligation blocks"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "public interest exception",
+      "terms": [
+        "public interest blocks"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "branch",
+      "label": "legal claims exception",
+      "terms": [
+        "legal claims block"
+      ]
+    },
+    {
+      "article": "erasure",
+      "kind": "rule",
+      "label": "delete_plan on accept",
+      "terms": [
+        "delete plan on accept"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "branch",
+      "label": "accept inaccuracy suspicion",
+      "terms": [
+        "accept inaccuracy"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "edge",
+      "label": "missing user_id validation",
+      "terms": [
+        "missing user id"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "edge",
+      "label": "missing target_user_id validation",
+      "terms": [
+        "missing target user id"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "edge",
+      "label": "missing request_id validation",
+      "terms": [
+        "missing request id"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "edge",
+      "label": "empty fields validation",
+      "terms": [
+        "empty fields"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "edge",
+      "label": "unknown target user lookup",
+      "terms": [
+        "unknown target user lookup"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "branch",
+      "label": "reject corrected data",
+      "terms": [
+        "reject corrected"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "branch",
+      "label": "accept invalid purpose",
+      "terms": [
+        "accept invalid purpose"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "branch",
+      "label": "reject valid purpose",
+      "terms": [
+        "reject valid purpose"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "branch",
+      "label": "accept Article 21 objection",
+      "terms": [
+        "accept article 21"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "branch",
+      "label": "reject Article 21 override",
+      "terms": [
+        "reject article 21"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "branch",
+      "label": "accept unlawfulness",
+      "terms": [
+        "accept unlawfulness"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "branch",
+      "label": "reject unsupported reason",
+      "terms": [
+        "reject unsupported reason"
+      ]
+    },
+    {
+      "article": "restriction",
+      "kind": "branch",
+      "label": "reject unauthorized request",
+      "terms": [
+        "reject unauthorized request"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "branch",
+      "label": "valid_request true",
+      "terms": [
+        "valid portability request"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "edge",
+      "label": "missing user_id validation",
+      "terms": [
+        "missing user id"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "edge",
+      "label": "missing target_user_id validation",
+      "terms": [
+        "missing target user id"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "edge",
+      "label": "missing request_id validation",
+      "terms": [
+        "missing request id"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "edge",
+      "label": "unknown target user fallback data",
+      "terms": [
+        "unknown target user fallback"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "dependency",
+      "label": "uses consent.may_process_or_store",
+      "terms": [
+        "consent dependency"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "dependency",
+      "label": "uses lawful.lawful_processing",
+      "terms": [
+        "lawful dependency"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "branch",
+      "label": "reject withdrawn consent",
+      "terms": [
+        "reject withdrawn consent"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "branch",
+      "label": "reject unlawful processing",
+      "terms": [
+        "reject unlawful processing"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "branch",
+      "label": "accept export",
+      "terms": [
+        "accept export"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "branch",
+      "label": "compatible transfer starts",
+      "terms": [
+        "compatible transfer starts"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "branch",
+      "label": "incompatible transfer not started",
+      "terms": [
+        "incompatible transfer"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "branch",
+      "label": "transfer not requested empty block",
+      "terms": [
+        "transfer not requested"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "branch",
+      "label": "accepted export keeps transfer warning",
+      "terms": [
+        "transfer warning"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "branch",
+      "label": "reject unauthorized request",
+      "terms": [
+        "reject unauthorized request"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "rule",
+      "label": "legal basis contract mapping",
+      "terms": [
+        "legal basis contract"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "rule",
+      "label": "legal basis legal_obligation mapping",
+      "terms": [
+        "legal basis legal obligation"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "rule",
+      "label": "legal basis legitimate_interest mapping",
+      "terms": [
+        "legal basis legitimate interest"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "rule",
+      "label": "legal basis public_interest mapping",
+      "terms": [
+        "legal basis public interest"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "rule",
+      "label": "legal basis marketing/consent mapping",
+      "terms": [
+        "legal basis marketing consent"
+      ]
+    },
+    {
+      "article": "portability",
+      "kind": "rule",
+      "label": "legal basis unknown mapping",
+      "terms": [
+        "legal basis unknown"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "branch",
+      "label": "accept marketing objection",
+      "terms": [
+        "accept marketing"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "edge",
+      "label": "missing user_id validation",
+      "terms": [
+        "missing user id"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "edge",
+      "label": "missing target_user_id validation",
+      "terms": [
+        "missing target user id"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "edge",
+      "label": "missing request_id validation",
+      "terms": [
+        "missing request id"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "edge",
+      "label": "empty fields validation",
+      "terms": [
+        "empty fields"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "edge",
+      "label": "unknown target user lookup",
+      "terms": [
+        "unknown target user lookup"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "branch",
+      "label": "accept unnecessary legitimate interest",
+      "terms": [
+        "accept unnecessary legitimate"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "branch",
+      "label": "reject necessary legitimate interest",
+      "terms": [
+        "reject necessary legitimate"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "branch",
+      "label": "accept unnecessary public interest",
+      "terms": [
+        "accept unnecessary public"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "branch",
+      "label": "reject necessary public interest",
+      "terms": [
+        "reject necessary public"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "branch",
+      "label": "reject unsupported reason",
+      "terms": [
+        "reject unsupported reason"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "branch",
+      "label": "reject unauthorized request",
+      "terms": [
+        "reject unauthorized request"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "dependency",
+      "label": "rejection exposes complaint mechanism",
+      "terms": [
+        "complaint info"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "rule",
+      "label": "legal basis contract mapping",
+      "terms": [
+        "legal basis contract"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "rule",
+      "label": "legal basis legal_obligation mapping",
+      "terms": [
+        "legal basis legal obligation"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "rule",
+      "label": "legal basis legitimate_interest mapping",
+      "terms": [
+        "legal basis legitimate interest"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "rule",
+      "label": "legal basis public_interest mapping",
+      "terms": [
+        "legal basis public interest"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "rule",
+      "label": "legal basis marketing/consent mapping",
+      "terms": [
+        "legal basis marketing consent"
+      ]
+    },
+    {
+      "article": "objection",
+      "kind": "rule",
+      "label": "legal basis unknown mapping",
+      "terms": [
+        "legal basis unknown"
+      ]
+    },
+    {
+      "article": "complaint",
+      "kind": "branch",
+      "label": "accept valid complaint",
+      "terms": [
+        "accept valid complaint"
+      ]
+    },
+    {
+      "article": "complaint",
+      "kind": "branch",
+      "label": "reject missing user id",
+      "terms": [
+        "reject missing user"
+      ]
+    },
+    {
+      "article": "complaint",
+      "kind": "branch",
+      "label": "reject unknown user",
+      "terms": [
+        "reject unknown user"
+      ]
+    },
+    {
+      "article": "complaint",
+      "kind": "branch",
+      "label": "reject missing description",
+      "terms": [
+        "reject missing description"
+      ]
+    },
+    {
+      "article": "complaint",
+      "kind": "branch",
+      "label": "reject missing authority",
+      "terms": [
+        "reject missing authority"
+      ]
+    },
+    {
+      "article": "complaint",
+      "kind": "branch",
+      "label": "reject unknown authority",
+      "terms": [
+        "reject unknown authority"
+      ]
+    },
+    {
+      "article": "complaint",
+      "kind": "rule",
+      "label": "forward accepted complaint",
+      "terms": [
+        "forward accepted complaint"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "branch",
+      "label": "notify detected high-risk breach within 72 hours",
+      "terms": [
+        "notify detected high risk"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "edge",
+      "label": "high risk rights_freedoms category",
+      "terms": [
+        "high risk rights freedoms"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "edge",
+      "label": "high risk identity_theft category",
+      "terms": [
+        "high risk identity theft"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "edge",
+      "label": "high risk discrimination category",
+      "terms": [
+        "high risk discrimination"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "edge",
+      "label": "high risk financial_loss category",
+      "terms": [
+        "high risk financial loss"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "edge",
+      "label": "high risk reputational_damage category",
+      "terms": [
+        "high risk reputational damage"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "branch",
+      "label": "reject no breach detected",
+      "terms": [
+        "reject no breach detected"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "branch",
+      "label": "reject missing incident id",
+      "terms": [
+        "reject missing incident"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "branch",
+      "label": "reject over 72 hours",
+      "terms": [
+        "reject over 72"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "branch",
+      "label": "reject low risk",
+      "terms": [
+        "reject low risk"
+      ]
+    },
+    {
+      "article": "breach",
+      "kind": "rule",
+      "label": "notify affected users action",
+      "terms": [
+        "actions notify affected"
+      ]
+    }
+  ]
+}

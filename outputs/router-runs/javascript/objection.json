@@ -1,0 +1,45 @@
+{
+  "decision": "reject",
+  "justification": [
+    "Rejected: processing is necessary and overrides the objection (legitimate interest assessment)."
+  ],
+  "actions": {
+    "log_audit": {
+      "decision": "reject",
+      "fields": [
+        "email",
+        "age"
+      ],
+      "justification": [
+        "Rejected: processing is necessary and overrides the objection (legitimate interest assessment)."
+      ],
+      "reason": "legitimate_interest",
+      "request_id": "obj-002",
+      "requester_user_id": "1",
+      "target_user_id": "1",
+      "type": "objection_request"
+    },
+    "notify_user": {
+      "complaint": {
+        "message": "If you disagree with this outcome, you can lodge a complaint with your Data Protection Authority (DPA)."
+      },
+      "decision": "reject",
+      "justification": [
+        "Rejected: processing is necessary and overrides the objection (legitimate interest assessment)."
+      ],
+      "request_id": "obj-002"
+    },
+    "present_processing_context": [
+      {
+        "field": "email",
+        "legal_basis": "contract",
+        "purpose": "contract"
+      },
+      {
+        "field": "age",
+        "legal_basis": "consent",
+        "purpose": "marketing"
+      }
+    ]
+  }
+}

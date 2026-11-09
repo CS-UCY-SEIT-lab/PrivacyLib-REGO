@@ -1,0 +1,58 @@
+{
+  "decision": "accept",
+  "justification": [],
+  "actions": {
+    "authorities": [
+      {
+        "channel": "email",
+        "country": "Cyprus",
+        "endpoint": "complaints@dataprotection.gov.cy",
+        "id": "cy-0000",
+        "name": "Office of the Commissioner for Personal Data Protection (Cyprus)"
+      },
+      {
+        "channel": "webform",
+        "country": "Ireland",
+        "endpoint": "https://forms.dataprotection.ie/contact",
+        "id": "ie-dpc",
+        "name": "Data Protection Commission (Ireland)"
+      }
+    ],
+    "forward": {
+      "authority": {
+        "channel": "email",
+        "country": "Cyprus",
+        "endpoint": "complaints@dataprotection.gov.cy",
+        "id": "cy-0000",
+        "name": "Office of the Commissioner for Personal Data Protection (Cyprus)"
+      },
+      "payload": {
+        "description": "I believe my data was used for marketing without my consent.",
+        "request_id": "cmp-001",
+        "user_id": "1"
+      }
+    },
+    "log_audit": {
+      "authority_id": "cy-0000",
+      "authority_name": "Office of the Commissioner for Personal Data Protection (Cyprus)",
+      "decision": "accept",
+      "description": "I believe my data was used for marketing without my consent.",
+      "request_id": "cmp-001",
+      "type": "supervisory_authority_complaint",
+      "user_id": "1"
+    },
+    "notify_user": {
+      "decision": "accept",
+      "message": "Your complaint has been recorded and will be forwarded to the selected supervisory authority.",
+      "request_id": "cmp-001"
+    },
+    "ui": {
+      "input_fields": [
+        "description",
+        "authority_id"
+      ],
+      "prompt": "You may lodge a complaint with a supervisory authority.",
+      "show_complaint_option": true
+    }
+  }
+}

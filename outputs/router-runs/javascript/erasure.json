@@ -1,0 +1,34 @@
+{
+  "decision": "reject",
+  "justification": [
+    "Rejected: retention required by legal obligation."
+  ],
+  "actions": {
+    "log_audit": {
+      "decision": "reject",
+      "fields": [
+        "email",
+        "age"
+      ],
+      "justification": [
+        "Rejected: retention required by legal obligation."
+      ],
+      "reason": "withdrawn_consent",
+      "request_id": "erase-001",
+      "requester_user_id": "1",
+      "target_user_id": "1",
+      "type": "erasure_request"
+    },
+    "notify_data_subject": {
+      "decision": "reject",
+      "justification": [
+        "Rejected: retention required by legal obligation."
+      ],
+      "request_id": "erase-001"
+    },
+    "notify_storage_period_and_criteria": {
+      "criteria": "standard retention policy",
+      "period": "2 years"
+    }
+  }
+}

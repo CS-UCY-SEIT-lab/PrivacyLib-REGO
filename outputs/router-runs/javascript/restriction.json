@@ -1,0 +1,42 @@
+{
+  "decision": "accept",
+  "justification": [],
+  "actions": {
+    "log_audit": {
+      "decision": "accept",
+      "fields": [
+        "email",
+        "age"
+      ],
+      "justification": [],
+      "reason": "data_inaccuracy_suspicion",
+      "request_id": "restrict-001",
+      "requester_user_id": "1",
+      "target_user_id": "1",
+      "type": "restriction_request"
+    },
+    "notify_user": {
+      "decision": "accept",
+      "message": "Processing restricted for requested data. You will be notified of the result and before restriction is lifted.",
+      "request_id": "restrict-001"
+    },
+    "present_purposes": [
+      {
+        "field": "email",
+        "purpose": "contract"
+      },
+      {
+        "field": "age",
+        "purpose": "marketing"
+      }
+    ],
+    "stop_processing": {
+      "fields": [
+        "email",
+        "age"
+      ],
+      "mode": "restrict",
+      "target_user_id": "1"
+    }
+  }
+}
