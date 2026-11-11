@@ -1,9 +1,9 @@
-from applibrary import (apply_db_delete_plan, apply_db_update_plan, apply_processing_restriction_plan, may_process_or_store,lawful_processing, save_access_download, save_json, apply_stop_processing_plan)
-from opa_client import call_access_policy, call_information_policy, call_rectification_policy, process_complaint_request, process_erasure_request, process_portability_request, process_restriction_request,process_objection_request, process_breach_assessment
+from .applibrary import (apply_db_delete_plan, apply_db_update_plan, apply_processing_restriction_plan, may_process_or_store,lawful_processing, save_access_download, save_json, apply_stop_processing_plan)
+from .workflows import call_access_policy, call_information_policy, call_rectification_policy, process_complaint_request, process_erasure_request, process_portability_request, process_restriction_request,process_objection_request, process_breach_assessment
 import json
 from pathlib import Path
 
-with (Path(__file__).resolve().parents[1] / "gdpr/input.json").open("r", encoding="utf-8") as f:
+with (Path(__file__).resolve().parents[2] / "gdpr/input.json").open("r", encoding="utf-8") as f:
     base_input = json.load(f)
 
 def testing_consent_policy():

@@ -1,157 +1,50 @@
-from typing import Any, Dict, Optional
-import requests
-import json,os
-OPA_QUERY_URL = "http://localhost:8181/v1/query"
+"""Original Python application workflows, separate from the GDPR router."""
+import json
+import os
+from typing import Any, Dict
+from python.gdpr_router import GdprRouter
 
-def call_consent_policy(user_id: str, input_data: dict) -> bool:
-    query = f'x := data.consent.may_process_or_store("{user_id}")'
-    payload = {"query": query, "input": input_data}
+router = GdprRouter()
 
-    res = requests.post(OPA_QUERY_URL, json=payload)
-    res.raise_for_status()
-
-    data = res.json()
-    results = data.get("result", [])
-    if not results:
-        return False
-
-    return bool(results[0]["x"])
-
-def call_lawful_policy(user_id: str, input_data: dict) -> bool:
-    """
-    Calls data.lawful.lawful_processing(user_id)
-    and returns True/False properly.
-    """
-
-    query = f'x := data.lawful.lawful_processing("{user_id}")'
-
-    payload = {
-        "query": query,
-        "input": input_data,
-    }
-
-    res = requests.post(OPA_QUERY_URL, json=payload)
-    res.raise_for_status()
-
-    data = res.json()
-    results = data.get("result", [])
-
-    if not results:
-        return False
-
-    # OPA returns {"result": [{"x": true/false}]}
-    return bool(results[0]["x"])
-
-def call_information_policy(user_id: str, input_data: dict) -> dict:
-    """
-    Calls: data.information.information(user_id)
-    Returns the resulting object (dict).
-    """
-    query = f'x := data.information.information("{user_id}")'
-
-    payload = {
-        "query": query,
-        "input": input_data,
-    }
-
-    res = requests.post(OPA_QUERY_URL, json=payload)
-    res.raise_for_status()
-
-    data = res.json()
-    results = data.get("result", [])
-    if not results:
-        return {}
-
-   
-    return results[0].get("x", {})
-
-def call_access_policy(user_id: str, input_data: dict) -> dict:
-    """
-    Calls: data.access.access_response(user_id)
-    Returns the resulting object (dict).
-    """
-    query = f'x := data.access.access_response("{user_id}")'
-    payload = {"query": query, "input": input_data}
-
-    res = requests.post(OPA_QUERY_URL, json=payload)
-    res.raise_for_status()
-
-    data = res.json()
-    results = data.get("result", [])
-    if not results:
-        return {}
-
-    return results[0].get("x", {})
-
-def call_rectification_policy(user_id: str, input_data: dict) -> dict:
-    query = f'x := data.rectification.rectification_response("{user_id}")'
-    payload = {"query": query, "input": input_data}
-
-    res = requests.post(OPA_QUERY_URL, json=payload)
-
-    # 👇 show OPA's error message instead of just "400 Bad Request"
-    if res.status_code != 200:
-        print("OPA status:", res.status_code)
-        print("OPA response body:", res.text)
-        print("OPA query was:", query)
-        raise RuntimeError("OPA query failed")
-
-    data = res.json()
-    results = data.get("result", [])
-    if not results:
-        return {}
-    return results[0].get("x", {})
-
-# Erasure integration : (4) Notify data subject + (5) Notify storage period
-
-def _opa_query(query: str, input_data: Dict[str, Any]) -> Optional[Any]:
-    """
-    Executes an OPA query and returns the value bound to 'x', or None.
-    Uses the /v1/query endpoint (your current pattern).
-    """
-    payload = {"query": query, "input": input_data}
-    res = requests.post(OPA_QUERY_URL, json=payload)
-
-    if res.status_code != 200:
-        print("OPA status:", res.status_code)
-        print("OPA response body:", res.text)
-        print("OPA query was:", query)
-        raise RuntimeError("OPA query failed")
-
-    data = res.json()
-    results = data.get("result", [])
-    if not results:
-        return None
-
-    return results[0].get("x")
+def call_consent_policy(user_id: str, input_data: dict):
+    return router.route("consent", input_data, user_id)
 
 
-def call_erasure_policy(input_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Returns:
-      {
-        "decision": "accept"|"reject",
-        "justification": [...],
-        "actions": {...}
-      }
-    """
-    decision = _opa_query("x := data.privacy.erasure.decision", input_data)
-    justification = _opa_query("x := data.privacy.erasure.justification", input_data)
-    actions = _opa_query("x := data.privacy.erasure.actions", input_data)
+def call_lawful_policy(user_id: str, input_data: dict):
+    return router.route("lawful", input_data, user_id)
 
-    # Normalize missing values
-    if decision is None:
-        decision = "reject"
-    if justification is None:
-        justification = []
-    if actions is None:
-        actions = {}
 
-    return {
-        "decision": decision,
-        "justification": justification,
-        "actions": actions,
-    }
+def call_information_policy(user_id: str, input_data: dict):
+    return router.route("information", input_data, user_id)
+
+
+def call_access_policy(user_id: str, input_data: dict):
+    return router.route("access", input_data, user_id)
+
+
+def call_rectification_policy(user_id: str, input_data: dict):
+    return router.route("rectification", input_data, user_id)
+
+
+def call_erasure_policy(input_data: dict):
+    return router.route("erasure", input_data)
+
+
+def call_portability_policy(input_data: dict):
+    return router.route("portability", input_data)
+
+
+def call_objection_policy(input_data: dict):
+    return router.route("objection", input_data)
+
+
+def call_breach_policy(input_data: dict):
+    return router.route("breach", input_data)
+
+
+def call_complaint_policy(input_data: dict):
+    return router.route("complaint", input_data)
+
 
 def notify_data_subject(notification: Dict[str, Any], dpo: Dict[str, Any], controller: Dict[str, Any]) -> None:
     """
@@ -210,6 +103,7 @@ def process_erasure_request(input_data: Dict[str, Any]) -> Dict[str, Any]:
 
     return result
 
+
 def process_restriction_request(input_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Single entry point for Right to Restriction of Processing.
@@ -219,24 +113,7 @@ def process_restriction_request(input_data: Dict[str, Any]) -> Dict[str, Any]:
     - Returns decision + actions
     """
 
-    payload = {
-        "query": "x := data.restriction",
-        "input": input_data
-    }
-
-    res = requests.post(OPA_QUERY_URL, json=payload)
-
-    if res.status_code != 200:
-        print("OPA status:", res.status_code)
-        print("OPA response body:", res.text)
-        raise RuntimeError("OPA query failed")
-
-    data = res.json()
-    results = data.get("result", [])
-    if not results:
-        return {}
-
-    result = results[0]["x"]
+    result = router.route("restriction", input_data)
 
     decision = result.get("decision")
     actions = result.get("actions", {})
@@ -280,30 +157,6 @@ def process_restriction_request(input_data: Dict[str, Any]) -> Dict[str, Any]:
         "decision": decision,
         "justification": justification,
         "actions": actions
-    }
-
-def call_portability_policy(input_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Calls:
-      - data.portability.decision
-      - data.portability.justification
-      - data.portability.actions
-    """
-    decision = _opa_query("x := data.portability.decision", input_data)
-    justification = _opa_query("x := data.portability.justification", input_data)
-    actions = _opa_query("x := data.portability.actions", input_data)
-
-    if decision is None:
-        decision = "reject"
-    if justification is None:
-        justification = []
-    if actions is None:
-        actions = {}
-
-    return {
-        "decision": decision,
-        "justification": justification,
-        "actions": actions,
     }
 
 
@@ -351,37 +204,6 @@ def process_portability_request(input_data: Dict[str, Any]) -> Dict[str, Any]:
         print("--- END AUDIT ---\n")
 
     return result
-
-def call_objection_policy(input_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Calls:
-      - data.objection.decision
-      - data.objection.justification
-      - data.objection.actions
-
-    Returns:
-      {
-        "decision": "accept"|"reject",
-        "justification": [...],
-        "actions": {...}
-      }
-    """
-    decision = _opa_query("x := data.objection.decision", input_data)
-    justification = _opa_query("x := data.objection.justification", input_data)
-    actions = _opa_query("x := data.objection.actions", input_data)
-
-    if decision is None:
-        decision = "reject"
-    if justification is None:
-        justification = []
-    if actions is None:
-        actions = {}
-
-    return {
-        "decision": decision,
-        "justification": justification,
-        "actions": actions,
-    }
 
 
 def process_objection_request(input_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -441,30 +263,6 @@ def process_objection_request(input_data: Dict[str, Any]) -> Dict[str, Any]:
 
     return result
 
-def call_breach_policy(input_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Calls:
-      - data.breach.decision
-      - data.breach.justification
-      - data.breach.actions
-    """
-    decision = _opa_query("x := data.breach.decision", input_data)
-    justification = _opa_query("x := data.breach.justification", input_data)
-    actions = _opa_query("x := data.breach.actions", input_data)
-
-    if decision is None:
-        decision = "no_notify"
-    if justification is None:
-        justification = []
-    if actions is None:
-        actions = {}
-
-    return {
-        "decision": decision,
-        "justification": justification,
-        "actions": actions,
-    }
-
 
 def process_breach_assessment(input_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -519,30 +317,6 @@ def process_breach_assessment(input_data: Dict[str, Any]) -> Dict[str, Any]:
         print("--- END JUSTIFICATION ---\n")
 
     return result
-
-def call_complaint_policy(input_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Calls:
-      - data.complaint.decision
-      - data.complaint.justification
-      - data.complaint.actions
-    """
-    decision = _opa_query("x := data.complaint.decision", input_data)
-    justification = _opa_query("x := data.complaint.justification", input_data)
-    actions = _opa_query("x := data.complaint.actions", input_data)
-
-    if decision is None:
-        decision = "reject"
-    if justification is None:
-        justification = []
-    if actions is None:
-        actions = {}
-
-    return {
-        "decision": decision,
-        "justification": justification,
-        "actions": actions,
-    }
 
 
 def process_complaint_request(input_data: Dict[str, Any]) -> Dict[str, Any]:

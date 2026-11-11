@@ -7,7 +7,9 @@ returned action plans, including database changes, downloads, and notifications.
 
 ~~~text
 gdpr/                         Shared Rego policies and input.json
-python/                       Original Python application and OPA client
+python/
+  gdpr_router.py              Python router (decisions and action plans only)
+  cli.py                      Optional Python command-line runner
 javascript/
   src/gdpr-router.js           JavaScript router
   cli.js                      JavaScript command-line runner
@@ -22,6 +24,7 @@ tests/
     scenarios.json            Exported original scenarios and assertions
     inputs/                   Original representative input fixtures
 examples/                     Additional Rego examples
+  python/                     Original demo, workflow and database helpers
 outputs/                      Generated application artifacts
 privacyLibInputGenerator.html Input generator
 ~~~
@@ -36,14 +39,24 @@ Start OPA for the application clients:
 opa run --server --watch gdpr/
 ~~~
 
-Python requires Python 3.10+ and the dependencies in python/requirements.txt:
+Python requires Python 3.10+ and uses only the standard library:
 
 ~~~sh
-pip install -r python/requirements.txt
-python python/appMain.py
+python python/cli.py consent gdpr/input.json 1
+python python/cli.py erasure gdpr/input.json
 ~~~
 
-The original Python demo selects workflows in its main() function.
+Each language has one GDPR router that queries OPA and returns decisions and
+action plans. CLI files are optional callers, separate from the routers.
+Python's original application behavior (portability exports, printed
+notifications, database simulations, and demo functions) is preserved under
+`examples/python/`. To run that demo from the repository root:
+
+```sh
+python -m examples.python.appMain
+```
+
+Select its workflows in `examples/python/appMain.py`'s `main()` function.
 
 JavaScript requires Node.js 18+. PHP requires PHP 8.0+ with cURL for HTTP
 requests. Neither router needs additional packages.
@@ -62,6 +75,12 @@ object using the existing gdpr/input.json schema. The input file defaults to
 gdpr/input.json when omitted.
 
 Library usage:
+
+~~~python
+from python.gdpr_router import GdprRouter
+
+result = GdprRouter().route("access", input_data, "1")
+~~~
 
 ~~~js
 const { GdprRouter } = require('./javascript/src/gdpr-router');
@@ -88,9 +107,9 @@ produce a nonzero exit status. Set OPA_QUERY_URL to change the endpoint, or
 pass the URL and timeout to the router constructor. The default timeout is
 10 seconds per request.
 
-The JavaScript and PHP erasure routes use data.erasure, matching
-gdpr/erasure.rego. The original Python HTTP client still uses
-data.privacy.erasure.
+All three routers use `data.erasure`, matching `gdpr/erasure.rego`.
+Python accepts `GdprRouter(url=..., timeout_ms=...)`; all routers also support
+`OPA_QUERY_URL` and default to a 10-second timeout for each request.
 
 ## Original tests in all three languages
 
